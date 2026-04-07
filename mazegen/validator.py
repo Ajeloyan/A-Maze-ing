@@ -1,4 +1,4 @@
-from pydantic import BaseModel, model_validator, Field, ValidationError
+from pydantic import BaseModel, model_validator, Field
 from typing import Self
 import sys
 
@@ -19,12 +19,17 @@ def parsing(file: str) -> dict:
         print(f"error :{e}")
         sys.exit(1)
 
-    x, y = config["ENTRY"].split(",")
-    config.update({"ENTRY": (int(x), int(y))})
-    x, y = config["EXIT"].split(",")
-    config.update({"EXIT": (int(x), int(y))})
+    try:
+        x_in, y_in = config["ENTRY"].split(",")
+        config["ENTRY"] = (int(x_in), int(y_in))
+        x_out, y_out = config["EXIT"].split(",")
+        config["EXIT"] = (int(x_out), int(y_out))
 
-    return config
+        return MazeConfig(**config)
+
+    except (KeyError, ValueError) as e:
+        print(f"Parsing error: {e}")
+        sys.exit(1)
 
 
 class MazeConfig(BaseModel):
@@ -62,14 +67,3 @@ class MazeConfig(BaseModel):
         if not self.OUTPUT_FILE.endswith(".txt"):
             raise ValueError("Output file must be a .txt file")
         return self
-
-
-if __name__ == "__main__":
-    raw_data = parsing("config.txt")
-    try:
-        config_validated = MazeConfig(**raw_data)
-        print("config created/validated")
-        print((config_validated))
-    except ValidationError as e:
-        print(f"Error :\n{e}")
-        sys.exit(1)
