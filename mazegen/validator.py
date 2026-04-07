@@ -1,5 +1,30 @@
-from pydantic import BaseModel, model_validator, Field
+from pydantic import BaseModel, model_validator, Field, ValidationError
 from typing import Self
+import sys
+
+
+def parsing(file: str) -> dict:
+    config: dict = {}
+    try:
+        with open(file, "r") as file:
+            for line in file:
+                line = line.strip()
+                if line.startswith("#"):
+                    continue
+                if "=" not in line:
+                    continue
+                key, value = line.split("=")
+                config.update({key: value})
+    except FileNotFoundError as e:
+        print(f"error :{e}")
+        sys.exit(1)
+
+    x, y = config["ENTRY"].split(",")
+    config.update({"ENTRY": (int(x), int(y))})
+    x, y = config["EXIT"].split(",")
+    config.update({"EXIT": (int(x), int(y))})
+
+    return config
 
 
 class MazeConfig(BaseModel):
@@ -37,3 +62,14 @@ class MazeConfig(BaseModel):
         if not self.OUTPUT_FILE.endswith(".txt"):
             raise ValueError("Output file must be a .txt file")
         return self
+
+
+if __name__ == "__main__":
+    raw_data = parsing("config.txt")
+    try:
+        config_validated = MazeConfig(**raw_data)
+        print("config created/validated")
+        print((config_validated))
+    except ValidationError as e:
+        print(f"Error :\n{e}")
+        sys.exit(1)
