@@ -98,8 +98,8 @@ class Grid:
         self.repeat: int = 10
 
     def draw_grid(self) -> None:
-        if self.width >= 11 and self.height >= 10:
-            self.forty_two()
+        # if self.width >= 11 and self.height >= 10:
+        #     self.forty_two()
         self.dig_maze()
         for y in range(self.height):
             for x in range(self.width):
@@ -238,7 +238,14 @@ class Grid:
                 continue
             if cell_a.id != cell_b.id:
                 self.break_wall(cell_a, cell_b)
-                cell_b.id = cell_a.id
+                check_id = cell_a.id
+                for y in range(self.height):
+                    for x in range(self.width):
+                        if self.matrix[y][x].id == check_id:
+                            self.matrix[y][x].id = cell_b.id
+        for y in range(self.height):
+            for x in range(self.width):
+                print(self.matrix[y][x].id)
 
 
 if __name__ == "__main__":
