@@ -1,7 +1,7 @@
 from validator import parsing
 from enum import Enum
 from random import randint, shuffle
-
+from time import time
 
 class Tiles(Enum):
     WALL_H = "▀▀▀▀"
@@ -96,13 +96,12 @@ class Grid:
         self.count_tot = self.width * self.height
         self.all_visited: bool = True if self.count_tot == 0 else False
         self.repeat: int = 10
-
-
-    def color(self, cell, x, y, text):
-        if cell.fixed:
+    def color(self, text, cell):
+        if cell.fixed or self.matrix[y-1][x].is_fixed and self.matrix[y-1][x].walls['west'] or self.matrix[y][x-1].is_fixed and self.matrix[y-1][x].walls['north']:
             return f"\033[36m{text}\033[0m"
         else:
             return f"\033[31m{text}\033[0m"
+
 
     def draw_grid(self) -> None:
         if self.width >= 11 and self.height >= 10:
@@ -113,29 +112,30 @@ class Grid:
                 cell = self.matrix[y][x]
 
                 if cell.walls["west"]:
-                    print(self.color(cell, x, y, Tiles.JOINT_FULL.value), end="")
+                    print(self.color(Tiles.JOINT_FULL.value, cell), end="")
                 else:
-                    print(self.color(cell, x, y, Tiles.JOINT_THIN.value), end="")
+                    print(self.color(Tiles.JOINT_THIN.value, cell), end="")
 
                 if cell.walls["north"]:
-                    print(self.color(cell, x, y, Tiles.WALL_H.value), end="")
+                    print(self.color(Tiles.WALL_H.value, cell), end="")
                 else:
-                    print(self.color(cell, x, y, Tiles.PATH_H.value), end="")
+                    print(self.color(Tiles.PATH_H.value, cell), end="")
 
-            print(self.color(cell, x, y, Tiles.V_LINE.value))
+            print(self.color(Tiles.V_LINE.value, cell))
 
             for _ in range(2):
                 for x in range(self.width):
                     cell = self.matrix[y][x]
                     if cell.walls["west"]:
-                        print(self.color(cell, x, y, Tiles.MID_WALL.value), end="")
+                        print(self.color(Tiles.MID_WALL.value, cell), end="")
                     else:
-                        print(self.color(cell, x, y, Tiles.MID_PATH.value), end="")
-                print(self.color(cell, x, y, Tiles.V_LINE.value))
+                        print(self.color(Tiles.MID_PATH.value, cell), end="")
+                print(self.color(Tiles.V_LINE.value, cell))
 
         for x in range(self.width):
-            print(self.color(cell, x, y, Tiles.CORNER_BOT.value + Tiles.BOTTOM.value), end="")
-        print(self.color(cell, x, y, Tiles.CORNER_BOT.value))
+            print(self.color(Tiles.CORNER_BOT.value + Tiles.BOTTOM.value, cell), end="")
+        print(self.color(Tiles.CORNER_BOT.value, cell))
+
 
     def mid_cellule(self) -> Cell:
         x = self.width // 2
@@ -250,12 +250,10 @@ class Grid:
                     for x in range(self.width):
                         if self.matrix[y][x].id == check_id:
                             self.matrix[y][x].id = cell_b.id
-        for y in range(self.height):
-            for x in range(self.width):
-                print(self.matrix[y][x].id)
 
 
 if __name__ == "__main__":
+    start = time()
     grid = Grid()
     mid_cell = grid.mid_cellule()
     x = mid_cell.x
@@ -264,4 +262,7 @@ if __name__ == "__main__":
     print()
     # grid.forty_two()
     grid.draw_grid()
+    end = time()
+    print(end-start)
     print()
+    print("\033[31mTexte rouge\033[0m")
