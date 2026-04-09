@@ -1,6 +1,6 @@
 from validator import parsing
 from enum import Enum
-from random import randint, shuffle
+from random import shuffle
 
 
 class Tiles(Enum):
@@ -98,8 +98,8 @@ class Grid:
         self.repeat: int = 10
 
     def draw_grid(self) -> None:
-        # if self.width >= 11 and self.height >= 10:
-        #     self.forty_two()
+        if self.width >= 11 and self.height >= 10:
+            self.forty_two()
         self.dig_maze()
         for y in range(self.height):
             for x in range(self.width):
@@ -200,26 +200,6 @@ class Grid:
         elif cell_a.y > cell_b.y:
             cell_a.walls["north"] = True
             cell_b.walls["south"] = True
-
-    # def dig_maze(self) -> None:
-    #     while self.count_tot > 0:
-    #         y = randint(0, self.height - 1)
-    #         x = randint(0, self.width - 1)
-
-    #         work = grid.matrix[y][x]
-    #         if work.is_visited is False:
-    #             work.is_visited = True
-    #             print(self.count_tot)
-    #             if not x == self.width - 1:
-    #                 work_b = grid.matrix[y][x+1]
-    #                 if work.fixed is False and work_b.fixed is False:
-    #                     grid.break_wall(work, work_b)
-    #             else:
-    #                 work_b = grid.matrix[y][x-1]
-    #                 grid.break_wall(work, work_b)
-    #             self.count_tot -= 1
-    #         else:
-    #             continue
 
     def dig_maze(self) -> None:
         i = 1
