@@ -1,6 +1,6 @@
 from validator import parsing
 from enum import Enum
-from random import randint
+from random import randint, shuffle
 
 
 class Tiles(Enum):
@@ -29,7 +29,8 @@ class Cell:
         self.bin: list[int] = [0, 0, 0, 0]
         self.hex: str = ""
         self.fixed: bool = False
-        
+        self.id: int = 0
+
     def is_fixed(self) -> None:
         if self.fixed is True:
             self.walls["north"] = True
@@ -39,7 +40,7 @@ class Cell:
 
     def __repr__(self):
         return f"{self.x}: {self.y}"
-    
+
     def binary(self) -> None:
         if self.walls["north"] is True:
             self.bin[0] = 1
@@ -83,8 +84,8 @@ class Cell:
             self.hex = "E"
         elif self.bin == [1, 1, 1, 1]:
             self.hex = "F"
-        
-                        
+
+
 class Grid:
     def __init__(self) -> None:
         config = parsing("config.txt")
@@ -95,12 +96,6 @@ class Grid:
         self.count_tot = self.width * self.height
         self.all_visited: bool = True if self.count_tot == 0 else False
         self.repeat: int = 10
-        
-        # mid_cell = self.mid_cellule()
-        # x = mid_cell.x
-        # y = mid_cell.y
-        # cell = self.matrix[y - 1][x]
-        # print(cell.bin)
 
     def draw_grid(self) -> None:
         if self.width >= 11 and self.height >= 10:
@@ -109,17 +104,17 @@ class Grid:
         for y in range(self.height):
             for x in range(self.width):
                 cell = self.matrix[y][x]
-                
+
                 if cell.walls["west"]:
                     print(Tiles.JOINT_FULL.value, end="")
                 else:
                     print(Tiles.JOINT_THIN.value, end="")
-                
+
                 if cell.walls["north"]:
                     print(Tiles.WALL_H.value, end="")
                 else:
                     print(Tiles.PATH_H.value, end="")
-            
+
             print(Tiles.V_LINE.value) 
 
             for _ in range(2):
@@ -141,27 +136,17 @@ class Grid:
         mid_cell: Cell = self.matrix[y][x]
         return mid_cell
 
-    # def forty_two2(self) -> None:
-    #     mid_cell: Cell = self.mid_cellule()
-    #     x: int = mid_cell.x
-    #     y: int = mid_cell.y
-    #     for i in range(1, 4):
-    #         self.matrix[y][x - i].fixed = True
-    #         self.matrix[y][x - i].is_fixed()
-    #         self.matrix[y + 1][x - i].walls["north"] = True
-    #         self.matrix[y][x].walls["west"] = True
-
     def forty_two(self) -> None:
         mid_cell: Cell = self.mid_cellule()
         x: int = mid_cell.x
         y: int = mid_cell.y
         j: int = 1
         for j in range(1, 3):
-            self.matrix[y][x - j].fixed = True,
+            self.matrix[y][x - j].fixed = True
             self.matrix[y][x - j - 1].fixed = True
         j = 0
         for j in range(0, 2):
-            self.matrix[y - j][x - 3].fixed = True 
+            self.matrix[y - j][x - 3].fixed = True
             self.matrix[y - j - 1][x - 3].fixed = True
         j = 0
         for j in range(1, 3):
@@ -216,35 +201,48 @@ class Grid:
             cell_a.walls["north"] = True
             cell_b.walls["south"] = True
 
-    def dig_maze(self) -> None:
-        while self.count_tot > 0:
-            y = randint(0, self.height - 1)
-            x = randint(0, self.width - 1)
+    # def dig_maze(self) -> None:
+    #     while self.count_tot > 0:
+    #         y = randint(0, self.height - 1)
+    #         x = randint(0, self.width - 1)
 
-            work = grid.matrix[y][x]
-            if work.is_visited is False:
-                work.is_visited = True
-                
-                print(self.count_tot)
-                if not x == self.width - 1:
-                    work_b = grid.matrix[y][x+1]
-                    if work.fixed is False and work_b.fixed is False:
-                        grid.break_wall(work, work_b)
-                else:
-                    work_b = grid.matrix[y][x-1]
-                    grid.break_wall(work, work_b)
-                self.count_tot -= 1
-            else:
+    #         work = grid.matrix[y][x]
+    #         if work.is_visited is False:
+    #             work.is_visited = True
+    #             print(self.count_tot)
+    #             if not x == self.width - 1:
+    #                 work_b = grid.matrix[y][x+1]
+    #                 if work.fixed is False and work_b.fixed is False:
+    #                     grid.break_wall(work, work_b)
+    #             else:
+    #                 work_b = grid.matrix[y][x-1]
+    #                 grid.break_wall(work, work_b)
+    #             self.count_tot -= 1
+    #         else:
+    #             continue
+
+    def dig_maze(self) -> None:
+        i = 1
+        walls: list = []
+        for y in range(self.height):
+            for x in range(self.width):
+                self.matrix[y][x].id = i
+                i += 1
+                if x < self.width - 1:
+                    walls.append((self.matrix[y][x], self.matrix[y][x + 1]))
+                if y < self.height - 1:
+                    walls.append((self.matrix[y][x], self.matrix[y + 1][x]))
+        shuffle(walls)
+        for cell_a, cell_b in walls:
+            if cell_a.fixed is True or cell_b.fixed is True:
                 continue
+            if cell_a.id != cell_b.id:
+                self.break_wall(cell_a, cell_b)
+                cell_b.id = cell_a.id
 
 
 if __name__ == "__main__":
     grid = Grid()
-    for i in range(grid.width):
-        if i < grid.width - 1:
-            print(f"  {i}  ", end="")
-        else:
-            print(f"  {i}  ")
     mid_cell = grid.mid_cellule()
     x = mid_cell.x
     y = mid_cell.y
