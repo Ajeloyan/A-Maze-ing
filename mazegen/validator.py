@@ -3,38 +3,9 @@ from typing import Self
 import sys
 
 
-def parsing(file: str) -> dict:
-    config: dict = {}
-    try:
-        with open(file, "r") as file:
-            for line in file:
-                line = line.strip()
-                if line.startswith("#"):
-                    continue
-                if "=" not in line:
-                    continue
-                key, value = line.split("=")
-                config.update({key: value})
-    except FileNotFoundError as e:
-        print(f"error :{e}")
-        sys.exit(1)
-
-    try:
-        x_in, y_in = config["ENTRY"].split(",")
-        config["ENTRY"] = (int(x_in), int(y_in))
-        x_out, y_out = config["EXIT"].split(",")
-        config["EXIT"] = (int(x_out), int(y_out))
-
-        return MazeConfig(**config)
-
-    except (KeyError, ValueError) as e:
-        print(f"Parsing error: {e}")
-        sys.exit(1)
-
-
 class MazeConfig(BaseModel):
-    WIDTH: int = Field(ge=0, le=500)
-    HEIGHT: int = Field(ge=0, le=500)
+    WIDTH: int = Field(ge=4, le=500)
+    HEIGHT: int = Field(ge=4, le=500)
     ENTRY: tuple[int, int]
     EXIT: tuple[int, int]
     OUTPUT_FILE: str
@@ -67,3 +38,32 @@ class MazeConfig(BaseModel):
         if not self.OUTPUT_FILE.endswith(".txt"):
             raise ValueError("Output file must be a .txt file")
         return self
+
+
+def parsing(file: str) -> MazeConfig:
+    config: dict = {}
+    try:
+        with open(file, "r") as f:
+            for line in f:
+                line = line.strip()
+                if line.startswith("#"):
+                    continue
+                if "=" not in line:
+                    continue
+                key, value = line.split("=")
+                config.update({key: value})
+    except FileNotFoundError as e:
+        print(f"error lalala :{e}")
+        sys.exit(1)
+
+    try:
+        x_in, y_in = config["ENTRY"].split(",")
+        config["ENTRY"] = (int(x_in), int(y_in))
+        x_out, y_out = config["EXIT"].split(",")
+        config["EXIT"] = (int(x_out), int(y_out))
+
+        return MazeConfig(**config)
+
+    except (KeyError, ValueError) as e:
+        print(f"Parsing error: {e}")
+        sys.exit(1)
