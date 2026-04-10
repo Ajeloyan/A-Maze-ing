@@ -1,4 +1,4 @@
-from validator import parsing
+from .validator import MazeConfig
 from enum import Enum
 from random import shuffle
 
@@ -87,11 +87,11 @@ class Cell:
 
 
 class Grid:
-    def __init__(self) -> None:
-        config = parsing("config.txt")
+    def __init__(self, config: MazeConfig) -> None:
         self.width: int = config.WIDTH
         self.height: int = config.HEIGHT
-        self.matrix: list[list[Cell]] = [[Cell(x, y) for x in range(self.width)]
+        self.matrix: list[list[Cell]] = [[Cell(x, y) for
+                                          x in range(self.width)]
                                          for y in range(self.height)]
         self.count_tot = self.width * self.height
         self.all_visited: bool = True if self.count_tot == 0 else False
@@ -115,7 +115,7 @@ class Grid:
                 else:
                     print(Tiles.PATH_H.value, end="")
 
-            print(Tiles.V_LINE.value) 
+            print(Tiles.V_LINE.value)
 
             for _ in range(2):
                 for x in range(self.width):
@@ -226,15 +226,3 @@ class Grid:
         for y in range(self.height):
             for x in range(self.width):
                 print(self.matrix[y][x].id)
-
-
-if __name__ == "__main__":
-    grid = Grid()
-    mid_cell = grid.mid_cellule()
-    x = mid_cell.x
-    y = mid_cell.y
-    cell = grid.matrix[y][x - 1]
-    print()
-    # grid.forty_two()
-    grid.draw_grid()
-    print()
