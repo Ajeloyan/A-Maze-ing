@@ -13,8 +13,7 @@ class Tiles(Enum):
 	V_LINE = "█"
 	BOTTOM = "▀▀▀▀"
 	CORNER_BOT = "▀"
-	FIXED = "████"
-	FFIXED = "█████"
+	FIXED = "█████"
 
 
 class Cell:
@@ -113,12 +112,8 @@ class Grid:
 		for y in range(self.height):
 			for x in range(self.width):
 				cell = self.matrix[y][x]
-				if cell.fixed and self.matrix[y][x-1].fixed is False:
-					print(self.color(cell, x, y, Tiles.V_LINE.value), end="")
+				if cell.fixed:
 					print(self.color(cell, x, y, Tiles.FIXED.value), end="")
-					continue
-				elif cell.fixed:
-					print(self.color(cell, x, y, Tiles.FFIXED.value), end="")
 					continue
 				if cell.walls["west"]:
 					print(self.color(cell, x, y, Tiles.JOINT_FULL.value), end="")
@@ -135,12 +130,8 @@ class Grid:
 			for _ in range(2):
 				for x in range(self.width):
 					cell = self.matrix[y][x]
-					if cell.fixed and self.matrix[y][x-1].fixed is False:
-						print(self.color(cell, x, y, Tiles.V_LINE.value), end="")
+					if cell.fixed:
 						print(self.color(cell, x, y, Tiles.FIXED.value), end="")
-						continue
-					elif cell.fixed:
-						print(self.color(cell, x, y, Tiles.FFIXED.value), end ="")
 						continue
 					if cell.walls["west"]:
 						print(self.color(cell, x, y, Tiles.MID_WALL.value), end="")
