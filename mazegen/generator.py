@@ -3,7 +3,7 @@ from enum import Enum
 from random import shuffle, choice
 
 class EntryExitError(Exception):
-    print("Entry en Exit should be in a valid cell")
+    print("Entry and Exit should be in a valid cell")
 class Tiles(Enum):
     WALL_H = "▀▀▀▀"
     PATH_H = "    "
