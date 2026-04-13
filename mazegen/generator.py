@@ -15,8 +15,8 @@ class Tiles(Enum):
     BOTTOM = "▀▀▀▀"
     CORNER_BOT = "▀"
     FIXED = "█████"
-    PATH = "████"
-
+    PATH_TOP = " ┏┓ "
+    PATH_BOT = " ┗┛ "
 
 class Cell:
     def __init__(self, x: int, y: int) -> None:
@@ -106,21 +106,21 @@ class Grid:
         self.is_perfect: bool = config.PERFECT
 
     def color(self, cell, x, y, text):
-        if cell.fixed:
-            return f"\033[38;2;200;255;255m{text}\033[0m"
-        elif cell.in_path and text is Tiles.PATH.value:
-            return f"\033[32;2;200;255;255m{text}\033[0m"
-        else:
-            return f"\033[3;2;0;180;255m{text}\033[0m"
+        # if cell.fixed:
+        #     return f"\033[38;2;200;255;255m{text}\033[0m"
+        # elif cell.in_path and (text is Tiles.PATH_TOP.value or text is Tiles.PATH_BOT.value):
+        #     return f"\033[1;32;2;200;255;255m{text}\033[0m"
+        # else:
+        return f"\033[3;2;0;180;255m{text}\033[0m"
 
     def draw_grid(self) -> None:
+        print("\033[H")
         if self.width >= 11 and self.height >= 10:
             self.forty_two()
-        if self.matrix[self.ENTRY[1]][self.ENTRY[0]].fixed or self.matrix[self.EXIT[1]][self.EXIT[0]].fixed:
-            return EntryExitError
-        if self.is_digged is False:
-            self.dig_maze()
-            self.is_digged = True
+        if self.matrix[self.ENTRY[1]][self.ENTRY[0]].fixed:
+            print("ERROR")
+        # if self.is_digged is False:
+        #     self.dig_maze()
         for y in range(self.height):
             for x in range(self.width):
                 cell = self.matrix[y][x]
@@ -143,7 +143,7 @@ class Grid:
                           Tiles.PATH_H.value), end="")
 
             print(self.color(cell, x, y, Tiles.MID_WALL.value))
-            for _ in range(2):
+            for i in range(2):
                 for x in range(self.width):
                     cell = self.matrix[y][x]
 
@@ -160,8 +160,12 @@ class Grid:
                               Tiles.MID_NO.value), end="")
 
                     if cell.in_path:
-                        print(self.color(cell, x, y,
-                              Tiles.PATH.value), end="")
+                        if i == 0:
+                            print(self.color(cell, x, y,
+                                Tiles.PATH_TOP.value), end="")
+                        if i == 1:
+                            print(self.color(cell, x, y,
+                                Tiles.PATH_BOT.value), end="")
                     else:
                         print(self.color(cell, x, y,
                               Tiles.PATH_H.value), end="")
@@ -170,7 +174,7 @@ class Grid:
         for x in range(self.width):
             print(self.color(cell, x, y, Tiles.CORNER_BOT.value +
                   Tiles.BOTTOM.value), end="")
-        print(self.color(cell, x, y, Tiles.CORNER_BOT.value))
+        print(f"{self.color(cell, x, y, Tiles.CORNER_BOT.value)}\033[K", flush=True)
 
     def mid_cellule(self) -> Cell:
         x = self.width // 2
@@ -265,6 +269,8 @@ class Grid:
                     for x in range(self.width):
                         if self.matrix[y][x].id == check_id:
                             self.matrix[y][x].id = cell_b.id
+            self.draw_grid()
+        self.is_digged = True
 
     def get_neighbors(self, cell: Cell) -> list:
         neighbors = []

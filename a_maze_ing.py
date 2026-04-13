@@ -11,10 +11,13 @@ def main() -> None:
         sys.exit(1)
     grid = Grid(config)
     print()
-    print()
     # grid.draw_grid()
-    grid.draw_grid()
+    # grid.dig_maze()
+    print()
+    # grid.maze_solver()
+    grid.dig_maze()
     grid.maze_solver()
+
     grid.draw_grid()
 if __name__ == "__main__":
     main()
