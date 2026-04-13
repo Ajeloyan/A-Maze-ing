@@ -13,18 +13,18 @@ class MazeConfig(BaseModel):
 
     @model_validator(mode='after')
     def entry_validator(self) -> Self:
-        if (self.ENTRY[0] < 0 or self.ENTRY[0] >= self.WIDTH
-                or self.ENTRY[1] < 0 or self.ENTRY[1] >= self.HEIGHT):
+        if (self.ENTRY[0] < 0 or self.ENTRY[0] > self.WIDTH
+                or self.ENTRY[1] < 0 or self.ENTRY[1] > self.HEIGHT):
             raise ValueError("Entry point must have values between 0 "
-                             "and width or 0 and height")
+                             "and width-1 or 0 and height-1")
         return self
 
     @model_validator(mode='after')
     def exit_validator(self) -> Self:
-        if (self.EXIT[0] < 0 or self.EXIT[0] >= self.WIDTH
-                or self.EXIT[1] < 0 or self.EXIT[1] >= self.HEIGHT):
+        if (self.EXIT[0] < 0 or self.EXIT[0] > self.WIDTH
+                or self.EXIT[1] < 0 or self.EXIT[1] > self.HEIGHT):
             raise ValueError("Exit point must have values between 0 "
-                             "and width or 0 and height")
+                             "and width-1 or 0 and height-1")
         return self
 
     @model_validator(mode='after')
