@@ -65,5 +65,5 @@ def parsing(file: str) -> MazeConfig:
         return MazeConfig(**config)
 
     except (KeyError, ValueError) as e:
-        print(f"Parsing error: {e}")
+        # print(f"Parsing error: {e}")
         sys.exit(1)
