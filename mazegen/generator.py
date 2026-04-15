@@ -2,8 +2,11 @@ from .validator import MazeConfig
 from enum import Enum
 from random import shuffle, choice
 
+
 class EntryExitError(Exception):
     print("Entry and Exit should be in a valid cell")
+
+
 class Tiles(Enum):
     WALL_H = "▀▀▀▀▀▀"
     PATH_H = "      "
@@ -17,6 +20,7 @@ class Tiles(Enum):
     FIXED = "███████"
     PATH_TOP = " ████ "
     PATH_BOT = " ▀▀▀▀ "
+
 
 class Cell:
     def __init__(self, x: int, y: int) -> None:
@@ -107,9 +111,11 @@ class Grid:
         self.is_perfect: bool = config.PERFECT
 
     def color(self, cell, x, y, text):
-        if cell.in_path and (text is Tiles.PATH_TOP.value or text is Tiles.PATH_BOT.value):
+        if cell.in_path and (text is Tiles.PATH_TOP.value or
+                             text is Tiles.PATH_BOT.value):
             return f"\033[1;32;2;200;255;255m{text}\033[0m"
-        elif cell.spec and (text is Tiles.PATH_TOP.value or text is Tiles.PATH_BOT.value):
+        elif cell.spec and (text is Tiles.PATH_TOP.value or
+                            text is Tiles.PATH_BOT.value):
             return f"\033[1;31;2;200;255;255m{text}\033[0m"
         else:
             return f"\033[3;2;0;180;255m{text}\033[0m"
@@ -163,10 +169,10 @@ class Grid:
                     if cell.in_path or cell.spec:
                         if i == 0:
                             print(self.color(cell, x, y,
-                                Tiles.PATH_TOP.value), end="")
+                                  Tiles.PATH_TOP.value), end="")
                         if i == 1:
                             print(self.color(cell, x, y,
-                                Tiles.PATH_BOT.value), end="")
+                                  Tiles.PATH_BOT.value), end="")
                     else:
                         print(self.color(cell, x, y,
                               Tiles.PATH_H.value), end="")
@@ -175,7 +181,8 @@ class Grid:
         for x in range(self.width):
             print(self.color(cell, x, y, Tiles.CORNER_BOT.value +
                   Tiles.BOTTOM.value), end="")
-        print(f"{self.color(cell, x, y, Tiles.CORNER_BOT.value)}\033[K", flush=True)
+        print(f"{self.color(cell, x, y, Tiles.CORNER_BOT.value)}\033[K",
+              flush=True)
 
     def mid_cellule(self) -> Cell:
         x = self.width // 2
@@ -314,12 +321,13 @@ class Grid:
                 visited.add(next_cell)
             else:
                 path.pop()
+
     def get_direction(self, path) -> str:
         dirlist = []
         i = 0
         while i < len(path) - 1:
             cell_a = path[i]
-            cell_b = path[i +  1]
+            cell_b = path[i + 1]
             if cell_b.x == cell_a.x + 1:
                 dirlist.append("E")
             elif cell_b.x == cell_a.x - 1:
@@ -334,7 +342,7 @@ class Grid:
 
     def get_hexa(self) -> str:
         result = []
-        for y in range (self.height):
+        for y in range(self.height):
             for x in range(self.width):
                 result.append(self.matrix[y][x].hex)
             result.append("\n")
@@ -351,14 +359,14 @@ class Grid:
     def generate_txt(self) -> None:
         path = self.maze_solver()
         output: str = "output_maze.txt"
-        try :
+        try:
             with open(output, "w") as file:
 
                 hexa = self.get_hexa()
                 file.write(hexa)
                 entry = self.get_entry()
                 file.write(entry)
-                exi =self.get_exit()
+                exi = self.get_exit()
                 file.write(exi)
                 direc = self.get_direction(path)
                 file.write(direc)
