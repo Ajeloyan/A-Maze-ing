@@ -5,18 +5,18 @@ from random import shuffle, choice
 class EntryExitError(Exception):
     print("Entry and Exit should be in a valid cell")
 class Tiles(Enum):
-    WALL_H = "▀▀▀▀"
-    PATH_H = "    "
+    WALL_H = "▀▀▀▀▀▀"
+    PATH_H = "      "
     MID_NO = " "
-    MID_PATH = "     "
+    MID_PATH = "       "
     JOINT_FULL = "█"
     JOINT_THIN = "▀"
     MID_WALL = "█"
-    BOTTOM = "▀▀▀▀"
+    BOTTOM = "▀▀▀▀▀▀"
     CORNER_BOT = "▀"
-    FIXED = "█████"
-    PATH_TOP = " ┏┓ "
-    PATH_BOT = " ┗┛ "
+    FIXED = "███████"
+    PATH_TOP = " ████ "
+    PATH_BOT = " ▀▀▀▀ "
 
 class Cell:
     def __init__(self, x: int, y: int) -> None:
@@ -34,6 +34,7 @@ class Cell:
         self.fixed: bool = False
         self.id: int = 0
         self.in_path = False
+        self.spec = False
 
     def is_fixed(self) -> None:
         if self.fixed is True:
@@ -106,12 +107,12 @@ class Grid:
         self.is_perfect: bool = config.PERFECT
 
     def color(self, cell, x, y, text):
-        # if cell.fixed:
-        #     return f"\033[38;2;200;255;255m{text}\033[0m"
-        # elif cell.in_path and (text is Tiles.PATH_TOP.value or text is Tiles.PATH_BOT.value):
-        #     return f"\033[1;32;2;200;255;255m{text}\033[0m"
-        # else:
-        return f"\033[3;2;0;180;255m{text}\033[0m"
+        if cell.in_path and (text is Tiles.PATH_TOP.value or text is Tiles.PATH_BOT.value):
+            return f"\033[1;32;2;200;255;255m{text}\033[0m"
+        elif cell.spec and (text is Tiles.PATH_TOP.value or text is Tiles.PATH_BOT.value):
+            return f"\033[1;31;2;200;255;255m{text}\033[0m"
+        else:
+            return f"\033[3;2;0;180;255m{text}\033[0m"
 
     def draw_grid(self) -> None:
         print("\033[H")
@@ -159,7 +160,7 @@ class Grid:
                         print(self.color(cell, x, y,
                               Tiles.MID_NO.value), end="")
 
-                    if cell.in_path:
+                    if cell.in_path or cell.spec:
                         if i == 0:
                             print(self.color(cell, x, y,
                                 Tiles.PATH_TOP.value), end="")
@@ -288,13 +289,16 @@ class Grid:
     def maze_solver(self) -> list:
         start = self.matrix[self.ENTRY[1]][self.ENTRY[0]]
         end = self.matrix[self.EXIT[1]][self.EXIT[0]]
+        start.spec = True
+        end.spec = True
         path = [start]
         visited = {start}
         while path:
             current = path[-1]
             if current == end:
                 for cell in path:
-                    cell.in_path = True
+                    if cell not in (start, end):
+                        cell.in_path = True
                 return path
             neighbors = [
                 case for case in self.get_neighbors(current)
