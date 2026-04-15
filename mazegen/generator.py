@@ -272,6 +272,10 @@ class Grid:
                             self.matrix[y][x].id = cell_b.id
             self.draw_grid()
         self.is_digged = True
+        for y in range(self.height):
+            for x in range(self.width):
+                self.matrix[y][x].binary()
+                self.matrix[y][x].hexa()
 
     def get_neighbors(self, cell: Cell) -> list:
         neighbors = []
@@ -327,3 +331,37 @@ class Grid:
             i += 1
         final = "".join(dirlist)
         return final
+
+    def get_hexa(self) -> str:
+        result = []
+        for y in range (self.height):
+            for x in range(self.width):
+                result.append(self.matrix[y][x].hex)
+            result.append("\n")
+        result.append("\n")
+        final = "".join(result)
+        return final
+
+    def get_entry(self) -> str:
+        return f"{self.ENTRY[0]}, {self.ENTRY[1]}\n"
+
+    def get_exit(self) -> str:
+        return f"{self.EXIT[0]}, {self.EXIT[1]}\n"
+
+    def generate_txt(self) -> None:
+        path = self.maze_solver()
+        output: str = "output_maze.txt"
+        try :
+            with open(output, "w") as file:
+
+                hexa = self.get_hexa()
+                file.write(hexa)
+                entry = self.get_entry()
+                file.write(entry)
+                exi =self.get_exit()
+                file.write(exi)
+                direc = self.get_direction(path)
+                file.write(direc)
+        except Exception as e:
+            print(e)
+        return
