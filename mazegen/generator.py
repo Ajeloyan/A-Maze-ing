@@ -323,7 +323,7 @@ class Grid:
             if cell_b.x == cell_a.x + 1:
                 dirlist.append("E")
             elif cell_b.x == cell_a.x - 1:
-                dirlist.append("w")
+                dirlist.append("W")
             elif cell_b.y == cell_a.y - 1:
                 dirlist.append("N")
             elif cell_b.y == cell_a.y + 1:
