@@ -4,6 +4,7 @@ import sys
 from time import time
 
 def main() -> None:
+	output: str = "output_maze.txt"
 	try:
 		config = parsing(sys.argv[1])
 	except Exception as e:
@@ -23,5 +24,13 @@ def main() -> None:
 	progtime = end - start
 	print(progtime)
 	grid.get_direction(path)
+	try :
+		with open(output, "w") as file:
+
+			content = grid.get_direction(path)
+			file.write(content)
+	except Exception as e:
+		print(e)
+		return
 if __name__ == "__main__":
 	main()
