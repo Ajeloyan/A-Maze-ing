@@ -8,7 +8,7 @@ def main() -> None:
         config = parsing(sys.argv[1])
     except Exception as e:
         print(e)
-    sys.exit(1)
+        sys.exit(1)
     grid = Grid(config)
     grid.dig_maze()
     grid.maze_solver()
