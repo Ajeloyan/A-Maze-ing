@@ -356,9 +356,8 @@ class Grid:
     def get_exit(self) -> str:
         return f"{self.EXIT[0]}, {self.EXIT[1]}\n"
 
-    def generate_txt(self) -> None:
+    def generate_txt(self,output: str) -> None:
         path = self.maze_solver()
-        output: str = "output_maze.txt"
         try:
             with open(output, "w") as file:
 

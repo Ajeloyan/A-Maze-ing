@@ -13,7 +13,7 @@ def main() -> None:
     grid.dig_maze()
     grid.maze_solver()
     grid.draw_grid()
-    grid.generate_txt()
+    grid.generate_txt(config.OUTPUT_FILE)
 
 
 if __name__ == "__main__":
