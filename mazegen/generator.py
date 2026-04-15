@@ -310,3 +310,17 @@ class Grid:
                 visited.add(next_cell)
             else:
                 path.pop()
+    def get_direction(self, path) -> None:
+        i = 0
+        while i < len(path) - 1:
+            cell_a = path[i]
+            cell_b = path[i +  1]
+            if cell_b.x == cell_a.x + 1:
+                print("E", end="")
+            elif cell_b.x == cell_a.x - 1:
+                print("W", end="")
+            elif cell_b.y == cell_a.y - 1:
+                print("N", end="")
+            elif cell_b.y == cell_a.y + 1:
+                print("S", end="")
+            i += 1
