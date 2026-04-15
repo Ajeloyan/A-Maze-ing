@@ -21,6 +21,7 @@
 from enum import Enum
 from mazegen.generator import Grid
 
+
 class colors(Enum):
     BLUE = "\033[38;2;0;180;255m"
     CYAN = "\033[38;2;200;255;255m"
@@ -32,10 +33,10 @@ class Menu:
     def __init__(self) -> None:
         pass
 
-    def clear_screen(self):
-        print("\033[2J\033[H", end="")
+    def clear_screen(self) -> None:
+        print("\033[2J\033[H\033[3J", end="", flush=True)
 
-    def run_menu(self, grid, config) -> None:
+    def run_menu(self, grid: Grid, config) -> None:
         while True:
             self.clear_screen()
             grid.draw_grid()
