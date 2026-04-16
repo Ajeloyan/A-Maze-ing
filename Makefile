@@ -18,6 +18,7 @@ clean:
 	rm -rf */__pycache__
 	rm -rf */.mypy_cache
 	rm -rf .mypy_cache
+	rm -rf __pycache__
 
 lint:
 	@python3 -m flake8 --exclude .env .
