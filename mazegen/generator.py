@@ -1,6 +1,6 @@
 from .validator import MazeConfig
 from enum import Enum
-from random import shuffle, choice
+from random import shuffle, choice, randint
 
 
 class EntryExitError(Exception):
@@ -110,15 +110,22 @@ class Grid:
         self.is_digged: bool = False
         self.is_perfect: bool = config.PERFECT
 
-    def color(self, cell, x, y, text):
+    def color(self, cell, text):
+        colors: list = [
+            "\033[38;2;131;103;166m",
+            "\033[38;2;248;118;102m",
+            "\033[38;2;255;160;81m",
+            "\033[38;2;99;184;155m",
+            "\033[38;2;80;167;194m",
+        ]
         if cell.in_path and (text is Tiles.PATH_TOP.value or
                              text is Tiles.PATH_BOT.value):
-            return f"\033[1;32;2;200;255;255m{text}\033[0m"
+            return f"{colors[1]}{text}\033[0m"
         elif cell.spec and (text is Tiles.PATH_TOP.value or
                             text is Tiles.PATH_BOT.value):
-            return f"\033[1;31;2;200;255;255m{text}\033[0m"
+            return f"{colors[2]}{text}\033[0m"
         else:
-            return f"\033[3;2;0;180;255m{text}\033[0m"
+            return f"{choice(colors)}{text}\033[0m"
 
     def draw_grid(self) -> None:
         print("\033[H")
@@ -133,55 +140,55 @@ class Grid:
                 cell = self.matrix[y][x]
 
                 if cell.fixed:
-                    print(self.color(cell, x, y, Tiles.FIXED.value), end="")
+                    print(self.color(cell, Tiles.FIXED.value), end="")
                     continue
                 if cell.walls["west"]:
-                    print(self.color(cell, x, y,
+                    print(self.color(cell,
                           Tiles.JOINT_FULL.value), end="")
                 else:
-                    print(self.color(cell, x, y,
+                    print(self.color(cell,
                           Tiles.JOINT_THIN.value), end="")
 
                 if cell.walls["north"]:
-                    print(self.color(cell, x, y,
+                    print(self.color(cell,
                           Tiles.WALL_H.value), end="")
                 else:
-                    print(self.color(cell, x, y,
+                    print(self.color(cell,
                           Tiles.PATH_H.value), end="")
 
-            print(self.color(cell, x, y, Tiles.MID_WALL.value))
+            print(self.color(cell, Tiles.MID_WALL.value))
             for i in range(2):
                 for x in range(self.width):
                     cell = self.matrix[y][x]
 
                     if cell.fixed:
-                        print(self.color(cell, x, y,
+                        print(self.color(cell,
                               Tiles.FIXED.value), end="")
                         continue
 
                     if cell.walls["west"]:
-                        print(self.color(cell, x, y,
+                        print(self.color(cell,
                               Tiles.MID_WALL.value), end="")
                     else:
-                        print(self.color(cell, x, y,
+                        print(self.color(cell,
                               Tiles.MID_NO.value), end="")
 
                     if cell.in_path or cell.spec:
                         if i == 0:
-                            print(self.color(cell, x, y,
+                            print(self.color(cell,
                                   Tiles.PATH_TOP.value), end="")
                         if i == 1:
-                            print(self.color(cell, x, y,
+                            print(self.color(cell,
                                   Tiles.PATH_BOT.value), end="")
                     else:
-                        print(self.color(cell, x, y,
+                        print(self.color(cell,
                               Tiles.PATH_H.value), end="")
-                print(self.color(cell, x, y, Tiles.MID_WALL.value))
+                print(self.color(cell, Tiles.MID_WALL.value))
 
         for x in range(self.width):
-            print(self.color(cell, x, y, Tiles.CORNER_BOT.value +
+            print(self.color(cell, Tiles.CORNER_BOT.value +
                   Tiles.BOTTOM.value), end="")
-        print(f"{self.color(cell, x, y, Tiles.CORNER_BOT.value)}\033[K",
+        print(f"{self.color(cell, Tiles.CORNER_BOT.value)}\033[K",
               flush=True)
 
     def mid_cellule(self) -> Cell:
@@ -270,7 +277,7 @@ class Grid:
         for i, (cell_a, cell_b) in enumerate(walls):
             if cell_a.fixed is True or cell_b.fixed is True:
                 continue
-            if cell_a.id != cell_b.id or i % 12 == 0 and \
+            if cell_a.id != cell_b.id or i % (self.width + self.height) == 0 and \
                self.is_perfect is False:
                 self.break_wall(cell_a, cell_b)
                 check_id = cell_a.id
