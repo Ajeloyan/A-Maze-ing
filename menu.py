@@ -57,6 +57,7 @@ class Menu():
                 if user_choice == "1":
                     grid.reset_grid()
                     grid.dig_maze()
+                    grid.maze_solver()
                     self.run_menu(grid)
                 elif user_choice == "2":
                     grid.visible_path = True
