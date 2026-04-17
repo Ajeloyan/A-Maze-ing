@@ -9,10 +9,10 @@ install:
 	@poetry install
 
 run:
-	@poetry run $(PYTHON) $(SCRIPT) $(CONFIG)
+	@poetry run $(PYTHON) $(SCRIPT) $(CONFIG) || true
 
 debug:
-	@poetry run $(PYTHON) -m pdb $(SCRIPT) $(CONFIG)
+	@poetry run $(PYTHON) -m pdb $(SCRIPT) $(CONFIG) || true
 
 clean:
 	@rm -rf */__pycache__

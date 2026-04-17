@@ -2,6 +2,7 @@ from pydantic import BaseModel, model_validator, Field
 from typing import Self
 import sys
 from enum import Enum
+from random import choice
 
 class Colors(Enum):
     ORANGE = "ORANGE"
@@ -10,8 +11,18 @@ class Colors(Enum):
     CYAN = "CYAN"
     PURPLE = "PURPLE"
     WHITE = "WHITE"
+    MULTI = "MULTI"
 
     def define(self):
+        if self == Colors.MULTI:
+            col = [
+                "\033[38;2;255;160;81m",
+            "\033[38;2;248;118;102m",
+            "\033[38;2;99;184;155m",
+            "\033[38;2;80;167;194m",
+            "\033[38;2;131;103;166m",
+            ]
+            return choice(col)
         return {
             "ORANGE": "\033[38;2;255;160;81m",
             "SALMON": "\033[38;2;248;118;102m",
