@@ -112,6 +112,7 @@ class Grid:
         self.wall_color: str = config.WALL_COLOR
         self.path_color: str = config.PATH_COLOR
         self.spec_color: str = config.SPEC_COLOR
+        self.visible_path: bool = False
 
     def coloration(self, cell, text):
        
@@ -168,7 +169,7 @@ class Grid:
                         print(self.coloration(cell,
                               Tiles.MID_NO.value), end="")
 
-                    if cell.in_path or cell.spec:
+                    if (cell.in_path and self.visible_path is True) or cell.spec :
                         if i == 0:
                             print(self.coloration(cell,
                                   Tiles.PATH_TOP.value), end="")
