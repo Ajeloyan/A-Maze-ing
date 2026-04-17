@@ -109,7 +109,7 @@ class Grid:
         self.path_color: str = config.PATH_COLOR
         self.spec_color: str = config.SPEC_COLOR
         self.visible_path: bool = False
-
+        self.algo = "dfs"
     def coloration(self, cell, text):
         if cell.in_path and (text is Tiles.PATH_TOP.value or
                              text is Tiles.PATH_BOT.value):
@@ -254,36 +254,36 @@ class Grid:
             cell_a.walls["north"] = True
             cell_b.walls["south"] = True
 
-    # def dig_maze(self) -> None:
-    #     i = 1
-    #     walls: list = []
-    #     for y in range(self.height):
-    #         for x in range(self.width):
-    #             self.matrix[y][x].id = i
-    #             i += 1
-    #             if x < self.width - 1:
-    #                 walls.append((self.matrix[y][x], self.matrix[y][x + 1]))
-    #             if y < self.height - 1:
-    #                 walls.append((self.matrix[y][x], self.matrix[y + 1][x]))
-    #     shuffle(walls)
-    #     for i, (cell_a, cell_b) in enumerate(walls):
-    #         if cell_a.fixed is True or cell_b.fixed is True:
-    #             continue
-    #         if cell_a.id != cell_b.id or i % (self.width + self.height) == 0 \
-    #            and self.is_perfect is False:
-    #             self.break_wall(cell_a, cell_b)
-    #             check_id = cell_a.id
-    #             for y in range(self.height):
-    #                 for x in range(self.width):
-    #                     if self.matrix[y][x].id == check_id:
-    #                         self.matrix[y][x].id = cell_b.id
+    def kruskal_generator(self) -> None:
+        i = 1
+        walls: list = []
+        for y in range(self.height):
+            for x in range(self.width):
+                self.matrix[y][x].id = i
+                i += 1
+                if x < self.width - 1:
+                    walls.append((self.matrix[y][x], self.matrix[y][x + 1]))
+                if y < self.height - 1:
+                    walls.append((self.matrix[y][x], self.matrix[y + 1][x]))
+        shuffle(walls)
+        for i, (cell_a, cell_b) in enumerate(walls):
+            if cell_a.fixed is True or cell_b.fixed is True:
+                continue
+            if cell_a.id != cell_b.id or i % (3) == 0 \
+               and self.is_perfect is False:
+                self.break_wall(cell_a, cell_b)
+                check_id = cell_a.id
+                for y in range(self.height):
+                    for x in range(self.width):
+                        if self.matrix[y][x].id == check_id:
+                            self.matrix[y][x].id = cell_b.id
 
-    #         self.draw_grid()
-    #     self.is_digged = True
-    #     for y in range(self.height):
-    #         for x in range(self.width):
-    #             self.matrix[y][x].binary()
-    #             self.matrix[y][x].hexa()
+            self.draw_grid()
+        self.is_digged = True
+        for y in range(self.height):
+            for x in range(self.width):
+                self.matrix[y][x].binary()
+                self.matrix[y][x].hexa()
 
     def get_neighbors(self, cell: Cell) -> list:
         neighbors = []
@@ -311,39 +311,48 @@ class Grid:
             neighbors.append(self.matrix[y][x-1])
         return neighbors
 
+
     def maze_solver(self) -> list:
+        from collections import deque
         start = self.matrix[self.ENTRY[1]][self.ENTRY[0]]
         end = self.matrix[self.EXIT[1]][self.EXIT[0]]
         start.spec = True
         end.spec = True
-        path = [start]
-        visited = {start}
-        while path:
-            current = path[-1]
+
+        queue = deque([start])
+        visited = {start: None}
+        while queue:
+            
+            current = queue.popleft()
             if current == end:
-                for cell in path:
-                    if cell not in (start, end):
-                        cell.in_path = True
-                return path
+                break
+                
             neighbors = [
                 case for case in self.get_neighbors(current)
                 if case not in visited and not case.fixed
             ]
-            if neighbors:
-                next_cell = choice(neighbors)
-                path.append(next_cell)
-                visited.add(next_cell)
-            else:
-                path.pop()
+            for new in neighbors:
+                next_cell = new
+                visited[(next_cell)] = current
+                queue.append(next_cell)
+        current = end
+        path = []
+        while current:
+            path.append(current)
+            current = visited[current]
+        
+        for cell in path:
+            if cell not in (start, end):
+                cell.in_path = True
+        return path[::-1]
 
     def dfs_generator(self) -> None:
         start = self.matrix[0][0]
         path: list[Cell] = [start]
         i = 0
         visited = {start}
-        print(path)
         while path:
-            current = path[0 + len(path) - 1]
+            current = path[-1]
             for y in range(self.height - 1):
                 for x in range(self.width - 1):
                     cell = self.matrix[y][x]
@@ -355,7 +364,6 @@ class Grid:
                 case for case in self.get_neighbors_bis(current)
                 if case not in visited and not case.fixed
             ]
-            print(neighbors)
             if neighbors:
                 next_cell = choice(neighbors)
                 self.break_wall(current, next_cell)
@@ -364,6 +372,9 @@ class Grid:
                 self.draw_grid()
             else:
                 path.pop()
+        # if self.is_perfect is False:
+        #     self.imperfect_maze()
+
 
     def get_direction(self, path) -> str:
         dirlist = []

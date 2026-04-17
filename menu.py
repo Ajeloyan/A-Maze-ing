@@ -125,7 +125,10 @@ class Menu():
                   f"3.{colors.RESET.value} Hide path           "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"4.{colors.RESET.value} Change color        "
+                  f"4.{colors.RESET.value} Change algo         "
+                  f"{colors.CYAN.value}║")
+            print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
+                  f"5.{colors.RESET.value} Change color        "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"q.{colors.RESET.value} Quit                "
@@ -135,10 +138,16 @@ class Menu():
             try:
                 user_choice: str = input("Please, enter a choice: ")
                 if user_choice == "1":
-                    grid.reset_grid()
-                    grid.dfs_generator()
-                    grid.maze_solver()
-                    self.run_menu(grid)
+                    if grid.algo == "dfs":
+                        grid.reset_grid()
+                        grid.dfs_generator()
+                        grid.maze_solver()
+                        self.run_menu(grid)
+                    elif grid.algo == "kruskal":
+                        grid.reset_grid()
+                        grid.kruskal_generator()
+                        grid.maze_solver()
+                        self.run_menu(grid)
                 elif user_choice == "2":
                     grid.visible_path = True
                     grid.draw_grid()
@@ -148,6 +157,19 @@ class Menu():
                     grid.draw_grid()
                     self.run_menu(grid)
                 elif user_choice == "4":
+                    if grid.algo == "dfs":
+                        grid.reset_grid()
+                        grid.kruskal_generator()
+                        grid.maze_solver()
+                        grid.algo = "kruskal"
+                        self.run_menu(grid)
+                    elif grid.algo == "kruskal":
+                        grid.reset_grid()
+                        grid.dfs_generator()
+                        grid.maze_solver()
+                        grid.algo = "dfs"
+                        self.run_menu(grid)
+                elif user_choice == "5":
                     self.colors_menu(grid)
                     self.run_menu()
                 elif user_choice == "q":

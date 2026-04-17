@@ -15,11 +15,12 @@ def main() -> None:
     grid.dfs_generator()
     grid.maze_solver()
     grid.draw_grid()
+    grid.generate_txt(config.OUTPUT_FILE)
     try:
         menu.run_menu(grid)
     except Exception as e:
         print(e)
-    grid.generate_txt(config.OUTPUT_FILE)
+    
 
 
 if __name__ == "__main__":
