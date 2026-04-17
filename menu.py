@@ -162,3 +162,4 @@ class Menu():
             except Exception as e:
                 print(e)
                 sys.exit(1)
+        sys.exit(1)
