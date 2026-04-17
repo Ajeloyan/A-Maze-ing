@@ -42,10 +42,10 @@ class Menu():
                   f"1.{colors.RESET.value} Generate new maze   "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"2.{colors.RESET.value} Show/Unshow path    "
+                  f"2.{colors.RESET.value} Show path           "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"3.{colors.RESET.value} autre               "
+                  f"3.{colors.RESET.value} Hide path           "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"q.{colors.RESET.value} Quit                "
