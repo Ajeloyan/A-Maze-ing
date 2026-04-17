@@ -2,7 +2,7 @@ from enum import Enum
 from mazegen.generator import Grid
 import sys
 import time
-from mazegen.validator import Colors, MazeConfig
+from mazegen.validator import Colors
 
 
 class colors(Enum):
@@ -34,29 +34,29 @@ class Menu():
             print(f"{colors.RESET.value}")
             print(f"{colors.CYAN.value}    ╔══════════════╗")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                f"1.{colors.RESET.value} ORANGE   "
-                f"{colors.CYAN.value}║")
+                  f"1.{colors.RESET.value} ORANGE   "
+                  f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                f"2.{colors.RESET.value} SALMON   "
-                f"{colors.CYAN.value}║")
+                  f"2.{colors.RESET.value} SALMON   "
+                  f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                f"3.{colors.RESET.value} GREEN    "
-                f"{colors.CYAN.value}║")
+                  f"3.{colors.RESET.value} GREEN    "
+                  f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                f"4.{colors.RESET.value} CYAN     "
-                f"{colors.CYAN.value}║")
+                  f"4.{colors.RESET.value} CYAN     "
+                  f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                f"5.{colors.RESET.value} PURPLE   "
-                f"{colors.CYAN.value}║")
+                  f"5.{colors.RESET.value} PURPLE   "
+                  f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                f"6.{colors.RESET.value} WHITE    "
-                f"{colors.CYAN.value}║")
+                  f"6.{colors.RESET.value} WHITE    "
+                  f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                f"7.{colors.RESET.value} MULTI    "
-                f"{colors.CYAN.value}║")
+                  f"7.{colors.RESET.value} MULTI    "
+                  f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                f"q.{colors.RESET.value} Go back  "
-                f"{colors.CYAN.value}║")
+                  f"q.{colors.RESET.value} Go back  "
+                  f"{colors.CYAN.value}║")
             print(f"    ╚══════════════╝{colors.RESET.value}")
 
             try:

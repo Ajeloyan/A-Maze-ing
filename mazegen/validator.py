@@ -18,10 +18,10 @@ class Colors(Enum):
         if self == Colors.MULTI:
             col = [
                 "\033[38;2;255;160;81m",
-            "\033[38;2;248;118;102m",
-            "\033[38;2;99;184;155m",
-            "\033[38;2;80;167;194m",
-            "\033[38;2;131;103;166m",
+                "\033[38;2;248;118;102m",
+                "\033[38;2;99;184;155m",
+                "\033[38;2;80;167;194m",
+                "\033[38;2;131;103;166m",
             ]
             return choice(col)
         return {
@@ -56,7 +56,7 @@ class MazeConfig(BaseModel):
     @model_validator(mode='after')
     def exit_validator(self) -> Self:
         if (self.EXIT[0] < 0 or self.EXIT[0] > self.WIDTH - 1
-                or self.EXIT[1] < 0 or self.EXIT[1] > self.HEIGHT -1):
+                or self.EXIT[1] < 0 or self.EXIT[1] > self.HEIGHT - 1):
             raise ValueError("Exit point must have values between 0 "
                              "and width-1 or 0 and height-1")
         return self
@@ -72,15 +72,18 @@ class MazeConfig(BaseModel):
         if not self.OUTPUT_FILE.endswith(".txt"):
             raise ValueError("Output file must be a .txt file")
         return self
+
     @model_validator(mode='after')
     def check_colors(self) -> Self:
-        if self.WALL_COLOR == self.PATH_COLOR or self.WALL_COLOR == self.SPEC_COLOR or self.PATH_COLOR == self.SPEC_COLOR:
+        if self.WALL_COLOR == self.PATH_COLOR or self.WALL_COLOR == \
+           self.SPEC_COLOR or self.PATH_COLOR == self.SPEC_COLOR:
             raise ValueError("Colors must be different")
         return self
-        
+
+
 def parsing(file: str) -> MazeConfig:
     config: dict = {}
-  
+
     try:
         with open(file, "r") as f:
             for line in f:

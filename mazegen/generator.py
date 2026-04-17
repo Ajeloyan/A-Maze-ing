@@ -1,6 +1,6 @@
 from .validator import MazeConfig
 from enum import Enum
-from random import shuffle, choice, randint
+from random import shuffle, choice
 
 
 class Tiles(Enum):
@@ -111,7 +111,6 @@ class Grid:
         self.visible_path: bool = False
 
     def coloration(self, cell, text):
-       
         if cell.in_path and (text is Tiles.PATH_TOP.value or
                              text is Tiles.PATH_BOT.value):
             return f"{self.path_color.define()}{text}\033[0m"
@@ -165,7 +164,8 @@ class Grid:
                         print(self.coloration(cell,
                               Tiles.MID_NO.value), end="")
 
-                    if (cell.in_path and self.visible_path is True) or cell.spec :
+                    if (cell.in_path and self.visible_path is True) \
+                       or cell.spec:
                         if i == 0:
                             print(self.coloration(cell,
                                   Tiles.PATH_TOP.value), end="")
@@ -269,8 +269,8 @@ class Grid:
         for i, (cell_a, cell_b) in enumerate(walls):
             if cell_a.fixed is True or cell_b.fixed is True:
                 continue
-            if cell_a.id != cell_b.id or i % (self.width + self.height) == 0 and \
-               self.is_perfect is False:
+            if cell_a.id != cell_b.id or i % (self.width + self.height) == 0 \
+               and self.is_perfect is False:
                 self.break_wall(cell_a, cell_b)
                 check_id = cell_a.id
                 for y in range(self.height):
@@ -378,7 +378,8 @@ class Grid:
         for y in range(self.height):
             for x in range(self.width):
                 cell = self.matrix[y][x]
-                cell.walls = {"north": True, "south": True, "east": True, "west": True}
+                cell.walls = {"north": True, "south": True,
+                              "east": True, "west": True}
                 cell.in_path = False
                 cell.spec = False
                 cell.is_visited = False
