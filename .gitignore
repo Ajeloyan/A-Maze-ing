@@ -4,3 +4,4 @@ __pycache__/
 peotry.lock
 .vscode
 amaze
+amazevenv
