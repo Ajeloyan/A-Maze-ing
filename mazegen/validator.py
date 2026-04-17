@@ -4,6 +4,7 @@ import sys
 from enum import Enum
 from random import choice
 
+
 class Colors(Enum):
     ORANGE = "ORANGE"
     SALMON = "SALMON"
@@ -71,7 +72,11 @@ class MazeConfig(BaseModel):
         if not self.OUTPUT_FILE.endswith(".txt"):
             raise ValueError("Output file must be a .txt file")
         return self
-    
+    @model_validator(mode='after')
+    def check_colors(self) -> Self:
+        if self.WALL_COLOR == self.PATH_COLOR or self.WALL_COLOR == self.SPEC_COLOR or self.PATH_COLOR == self.SPEC_COLOR:
+            raise ValueError("Colors must be different")
+        return self
         
 def parsing(file: str) -> MazeConfig:
     config: dict = {}
