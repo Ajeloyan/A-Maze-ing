@@ -125,7 +125,7 @@ class Menu():
                   f"3.{colors.RESET.value} Hide path           "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"4.{colors.RESET.value} change color        "
+                  f"4.{colors.RESET.value} Change color        "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"q.{colors.RESET.value} Quit                "
@@ -136,7 +136,7 @@ class Menu():
                 user_choice: str = input("Please, enter a choice: ")
                 if user_choice == "1":
                     grid.reset_grid()
-                    grid.dig_maze()
+                    grid.dfs_generator()
                     grid.maze_solver()
                     self.run_menu(grid)
                 elif user_choice == "2":

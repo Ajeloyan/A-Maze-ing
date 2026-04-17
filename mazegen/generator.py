@@ -254,36 +254,36 @@ class Grid:
             cell_a.walls["north"] = True
             cell_b.walls["south"] = True
 
-    def dig_maze(self) -> None:
-        i = 1
-        walls: list = []
-        for y in range(self.height):
-            for x in range(self.width):
-                self.matrix[y][x].id = i
-                i += 1
-                if x < self.width - 1:
-                    walls.append((self.matrix[y][x], self.matrix[y][x + 1]))
-                if y < self.height - 1:
-                    walls.append((self.matrix[y][x], self.matrix[y + 1][x]))
-        shuffle(walls)
-        for i, (cell_a, cell_b) in enumerate(walls):
-            if cell_a.fixed is True or cell_b.fixed is True:
-                continue
-            if cell_a.id != cell_b.id or i % (self.width + self.height) == 0 \
-               and self.is_perfect is False:
-                self.break_wall(cell_a, cell_b)
-                check_id = cell_a.id
-                for y in range(self.height):
-                    for x in range(self.width):
-                        if self.matrix[y][x].id == check_id:
-                            self.matrix[y][x].id = cell_b.id
+    # def dig_maze(self) -> None:
+    #     i = 1
+    #     walls: list = []
+    #     for y in range(self.height):
+    #         for x in range(self.width):
+    #             self.matrix[y][x].id = i
+    #             i += 1
+    #             if x < self.width - 1:
+    #                 walls.append((self.matrix[y][x], self.matrix[y][x + 1]))
+    #             if y < self.height - 1:
+    #                 walls.append((self.matrix[y][x], self.matrix[y + 1][x]))
+    #     shuffle(walls)
+    #     for i, (cell_a, cell_b) in enumerate(walls):
+    #         if cell_a.fixed is True or cell_b.fixed is True:
+    #             continue
+    #         if cell_a.id != cell_b.id or i % (self.width + self.height) == 0 \
+    #            and self.is_perfect is False:
+    #             self.break_wall(cell_a, cell_b)
+    #             check_id = cell_a.id
+    #             for y in range(self.height):
+    #                 for x in range(self.width):
+    #                     if self.matrix[y][x].id == check_id:
+    #                         self.matrix[y][x].id = cell_b.id
 
-            self.draw_grid()
-        self.is_digged = True
-        for y in range(self.height):
-            for x in range(self.width):
-                self.matrix[y][x].binary()
-                self.matrix[y][x].hexa()
+    #         self.draw_grid()
+    #     self.is_digged = True
+    #     for y in range(self.height):
+    #         for x in range(self.width):
+    #             self.matrix[y][x].binary()
+    #             self.matrix[y][x].hexa()
 
     def get_neighbors(self, cell: Cell) -> list:
         neighbors = []
@@ -295,6 +295,19 @@ class Grid:
         if not cell.walls["south"] and y < self.height - 1:
             neighbors.append(self.matrix[y+1][x])
         if not cell.walls["west"] and x > 0:
+            neighbors.append(self.matrix[y][x-1])
+        return neighbors
+    
+    def get_neighbors_bis(self, cell: Cell) -> list:
+        neighbors = []
+        x, y = cell.x, cell.y
+        if cell.walls["north"] and y > 0:
+            neighbors.append(self.matrix[y-1][x])
+        if cell.walls["east"] and x < self.width - 1:
+            neighbors.append(self.matrix[y][x+1])
+        if cell.walls["south"] and y < self.height - 1:
+            neighbors.append(self.matrix[y+1][x])
+        if cell.walls["west"] and x > 0:
             neighbors.append(self.matrix[y][x-1])
         return neighbors
 
@@ -320,6 +333,35 @@ class Grid:
                 next_cell = choice(neighbors)
                 path.append(next_cell)
                 visited.add(next_cell)
+            else:
+                path.pop()
+
+    def dfs_generator(self) -> None:
+        start = self.matrix[0][0]
+        path: list[Cell] = [start]
+        i = 0
+        visited = {start}
+        print(path)
+        while path:
+            current = path[0 + len(path) - 1]
+            for y in range(self.height - 1):
+                for x in range(self.width - 1):
+                    cell = self.matrix[y][x]
+                    if i == self.width * self.height:
+                        break
+                    if cell.is_visited is True:
+                        i += 1
+            neighbors = [
+                case for case in self.get_neighbors_bis(current)
+                if case not in visited and not case.fixed
+            ]
+            print(neighbors)
+            if neighbors:
+                next_cell = choice(neighbors)
+                self.break_wall(current, next_cell)
+                path.append(next_cell)
+                visited.add(next_cell)
+                self.draw_grid()
             else:
                 path.pop()
 

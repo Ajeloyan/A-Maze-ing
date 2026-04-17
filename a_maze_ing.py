@@ -12,7 +12,7 @@ def main() -> None:
         sys.exit(1)
     grid = Grid(config)
     menu = Menu()
-    grid.dig_maze()
+    grid.dfs_generator()
     grid.maze_solver()
     grid.draw_grid()
     try:
