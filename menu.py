@@ -59,9 +59,13 @@ class Menu():
                     grid.dig_maze()
                     self.run_menu(grid)
                 elif user_choice == "2":
-                    break
+                    grid.visible_path = True
+                    grid.draw_grid()
+                    self.run_menu(grid)
                 elif user_choice == "3":
-                    break
+                    grid.visible_path = False
+                    grid.draw_grid()
+                    self.run_menu(grid)
                 elif user_choice == "q":
                     print("Goodbye")
                     break
