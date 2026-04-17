@@ -302,7 +302,6 @@ class Grid:
             neighbors.append(self.matrix[y][x-1])
         return neighbors
 
-
     def maze_solver(self) -> list:
         start = self.matrix[self.ENTRY[1]][self.ENTRY[0]]
         end = self.matrix[self.EXIT[1]][self.EXIT[0]]
@@ -378,3 +377,12 @@ class Grid:
         except Exception as e:
             print(e)
         return
+
+    def reset_grid(self) -> None:
+        for y in range(self.height):
+            for x in range(self.width):
+                cell = self.matrix[y][x]
+                cell.walls = {"north": True, "south": True, "east": True, "west": True}
+                cell.in_path = False
+                cell.spec = False
+                cell.is_visited = False

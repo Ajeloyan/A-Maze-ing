@@ -15,7 +15,10 @@ def main() -> None:
     grid.dig_maze()
     grid.maze_solver()
     grid.draw_grid()
-    menu.run_menu(grid, config)
+    try:
+        menu.run_menu(grid)
+    except Exception as e:
+        print(e)
     grid.generate_txt(config.OUTPUT_FILE)
 
 

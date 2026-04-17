@@ -1,5 +1,7 @@
 from enum import Enum
 from mazegen.generator import Grid
+import sys
+import time
 
 
 class colors(Enum):
@@ -9,14 +11,14 @@ class colors(Enum):
     BOLD = "\033[1m"
 
 
-class Menu:
+class Menu():
     def __init__(self) -> None:
         pass
 
     def clear_screen(self) -> None:
         print("\033[2J\033[H\033[3J", end="", flush=True)
 
-    def run_menu(self, grid: Grid, config) -> None:
+    def run_menu(self, grid: Grid) -> None:
         while True:
             self.clear_screen()
             grid.draw_grid()
@@ -49,4 +51,26 @@ class Menu:
                   f"q.{colors.RESET.value} Quit                "
                   f"{colors.CYAN.value}║")
             print(f"    ╚═════════════════════════╝{colors.RESET.value}")
-            break
+
+            try:
+                user_choice: str = input("Please, enter a choice: ")
+                if user_choice == "1":
+                    grid.reset_grid()
+                    grid.dig_maze()
+                    self.run_menu(grid)
+                elif user_choice == "2":
+                    break
+                elif user_choice == "3":
+                    break
+                elif user_choice == "q":
+                    print("Goodbye")
+                    break
+                else:
+                    print("A number between 1 and 4 is needed")
+                    print("3 sec before retry...")
+                    time.sleep(3)
+                    self.run_menu(grid)
+
+            except Exception as e:
+                print(e)
+                sys.exit(1)
