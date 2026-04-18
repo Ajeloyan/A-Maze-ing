@@ -1,6 +1,6 @@
 from .validator import MazeConfig
 from enum import Enum
-from random import shuffle, choice
+from random import shuffle, choice, seed
 
 
 class Tiles(Enum):
