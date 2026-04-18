@@ -44,6 +44,7 @@ class MazeConfig(BaseModel):
     WALL_COLOR: Colors
     PATH_COLOR: Colors
     SPEC_COLOR: Colors
+    SEED: int | None
 
     @model_validator(mode='after')
     def entry_validator(self) -> Self:

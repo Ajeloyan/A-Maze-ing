@@ -110,6 +110,8 @@ class Grid:
         self.spec_color: str = config.SPEC_COLOR
         self.visible_path: bool = False
         self.algo = "dfs"
+        self.seed = config.SEED
+
     def coloration(self, cell, text):
         if cell.in_path and (text is Tiles.PATH_TOP.value or
                              text is Tiles.PATH_BOT.value):
@@ -257,6 +259,7 @@ class Grid:
     def kruskal_generator(self) -> None:
         i = 1
         walls: list = []
+        seed(self.seed)
         for y in range(self.height):
             for x in range(self.width):
                 self.matrix[y][x].id = i
@@ -297,7 +300,7 @@ class Grid:
         if not cell.walls["west"] and x > 0:
             neighbors.append(self.matrix[y][x-1])
         return neighbors
-    
+
     def get_neighbors_bis(self, cell: Cell) -> list:
         neighbors = []
         x, y = cell.x, cell.y
@@ -311,7 +314,6 @@ class Grid:
             neighbors.append(self.matrix[y][x-1])
         return neighbors
 
-
     def maze_solver(self) -> list:
         from collections import deque
         start = self.matrix[self.ENTRY[1]][self.ENTRY[0]]
@@ -322,11 +324,11 @@ class Grid:
         queue = deque([start])
         visited = {start: None}
         while queue:
-            
+
             current = queue.popleft()
             if current == end:
                 break
-                
+
             neighbors = [
                 case for case in self.get_neighbors(current)
                 if case not in visited and not case.fixed
@@ -351,6 +353,7 @@ class Grid:
         path: list[Cell] = [start]
         i = 0
         visited = {start}
+        seed(self.seed)
         while path:
             current = path[-1]
             for y in range(self.height - 1):
