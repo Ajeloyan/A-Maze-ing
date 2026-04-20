@@ -1,5 +1,5 @@
 from pydantic import BaseModel, model_validator, Field
-from typing import Self
+from typing import Self, Optional
 import sys
 from enum import Enum
 from random import choice
@@ -44,7 +44,7 @@ class MazeConfig(BaseModel):
     WALL_COLOR: Colors
     PATH_COLOR: Colors
     SPEC_COLOR: Colors
-    SEED: int | None
+    SEED: Optional[int] = Field(default=None)
 
     @model_validator(mode='after')
     def entry_validator(self) -> Self:

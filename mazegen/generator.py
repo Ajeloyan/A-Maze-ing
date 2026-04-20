@@ -111,6 +111,8 @@ class Grid:
         self.visible_path: bool = False
         self.algo = "dfs"
         self.seed = config.SEED
+        if self.width >= 11 and self.height >= 10:
+            self.forty_two()
 
     def coloration(self, cell, text):
         if cell.in_path and (text is Tiles.PATH_TOP.value or
@@ -124,8 +126,6 @@ class Grid:
 
     def draw_grid(self) -> None:
         print("\033[H")
-        if self.width >= 11 and self.height >= 10:
-            self.forty_two()
         if self.matrix[self.ENTRY[1]][self.ENTRY[0]].fixed:
             print("ERROR")
         for y in range(self.height):
@@ -272,8 +272,7 @@ class Grid:
         for i, (cell_a, cell_b) in enumerate(walls):
             if cell_a.fixed is True or cell_b.fixed is True:
                 continue
-            if cell_a.id != cell_b.id or i % (3) == 0 \
-               and self.is_perfect is False:
+            if cell_a.id != cell_b.id:
                 self.break_wall(cell_a, cell_b)
                 check_id = cell_a.id
                 for y in range(self.height):
@@ -281,8 +280,10 @@ class Grid:
                         if self.matrix[y][x].id == check_id:
                             self.matrix[y][x].id = cell_b.id
 
-            self.draw_grid()
+            # self.draw_grid()
         self.is_digged = True
+        if self.is_perfect is False:
+            self.imperfect_maze()
         for y in range(self.height):
             for x in range(self.width):
                 self.matrix[y][x].binary()
@@ -342,7 +343,7 @@ class Grid:
         while current:
             path.append(current)
             current = visited[current]
-        
+
         for cell in path:
             if cell not in (start, end):
                 cell.in_path = True
@@ -372,12 +373,25 @@ class Grid:
                 self.break_wall(current, next_cell)
                 path.append(next_cell)
                 visited.add(next_cell)
-                self.draw_grid()
+                # self.draw_grid()
             else:
                 path.pop()
-        # if self.is_perfect is False:
-        #     self.imperfect_maze()
+        if self.is_perfect is False:
+            self.imperfect_maze()
+        for y in range(self.height):
+            for x in range(self.width):
+                self.matrix[y][x].binary()
+                self.matrix[y][x].hexa()
 
+    def imperfect_maze(self) -> None:
+        i: int = 0
+        for y in range(self.height - 1):
+            for x in range(self.width - 1):
+                current_cell = self.matrix[y][x]
+                next_cell = self.matrix[y + 1][x]
+                if i % 10 == 0:
+                    self.break_wall(current_cell, next_cell)
+                i += 1
 
     def get_direction(self, path) -> str:
         dirlist = []
