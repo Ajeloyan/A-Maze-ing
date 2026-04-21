@@ -120,29 +120,60 @@ class Menu():
                   "         ╚═╝╚═╝  ╚═══╝ ╚═════╝ ")
             print(f"{colors.RESET.value}")
             print(f"{colors.RESET.value}")
-            print(f"{colors.CYAN.value}    ╔═══════════════════════════╗")
+            print(f"{colors.CYAN.value}    ╔═══════════════════════"
+                  f"══════════════════════════════╗")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"1.{colors.RESET.value} Generate new maze     "
+                  f"1.{colors.RESET.value} Generate new maze       "
+                  f"                        "
                   f"{colors.CYAN.value}║")
+            if grid.visible_path:
+                actual_path = "Show"
+                space = "  "
+            else:
+                actual_path = "Unshow"
+                space = ""
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"2.{colors.RESET.value} Show/hide path        "
+                  f"2.{colors.RESET.value} Show/hide path         "
+                  f"        {space}(actualy: {actual_path})"
                   f"{colors.CYAN.value}║")
+            if grid.algo == "dfs":
+                space = "    "
+            elif grid.algo == "kruskal":
+                space = ""
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"3.{colors.RESET.value} Change algo           "
+                  f"3.{colors.RESET.value} Change algo             "
+                  f"      {space}(actualy: {grid.algo})"
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"4.{colors.RESET.value} Change color          "
+                  f"                          "
                   f"{colors.CYAN.value}║")
+            if grid.animation:
+                actual_anim = "Show"
+                space = "  "
+            else:
+                actual_anim = "Unshow"
+                space = ""
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"5.{colors.RESET.value} Show/Unshow animation "
+                  f"5.{colors.RESET.value} Show/Unshow animation   "
+                  f"       {space}(actualy: {actual_anim})"
                   f"{colors.CYAN.value}║")
+            if grid.is_perfect:
+                actual_perfect = "Perfect"
+                space = "  "
+            else:
+                actual_perfect = "Imperfect"
+                space = ""
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"6.{colors.RESET.value} Perfect/Imperfect     "
+                  f"6.{colors.RESET.value} Perfect/Imperfect           "
+                  f"{space}(actualy: {actual_perfect})"
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"q.{colors.RESET.value} Quit                  "
+                  f"                          "
                   f"{colors.CYAN.value}║")
-            print(f"    ╚═══════════════════════════╝{colors.RESET.value}")
+            print(f"    ╚════════════════════════════════════════════"
+                  f"═════════╝{colors.RESET.value}")
 
             try:
                 user_choice: str = input("Please, enter a choice: ")
