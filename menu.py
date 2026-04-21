@@ -3,6 +3,7 @@ from mazegen.generator import Grid
 import sys
 import time
 from mazegen.validator import Colors
+from mazegen.validator import parsing
 
 
 class colors(Enum):
@@ -96,6 +97,11 @@ class Menu():
                 sys.exit(1)
 
     def run_menu(self, grid: Grid) -> None:
+        try:
+            config = parsing(sys.argv[1])
+        except Exception as e:
+            print(e)
+            sys.exit(1)
         while True:
             self.clear_screen()
             grid.draw_grid()
@@ -131,6 +137,9 @@ class Menu():
                   f"5.{colors.RESET.value} Show/Unshow animation "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
+                  f"6.{colors.RESET.value} Perfect/Imperfect     "
+                  f"{colors.CYAN.value}║")
+            print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"q.{colors.RESET.value} Quit                  "
                   f"{colors.CYAN.value}║")
             print(f"    ╚═══════════════════════════╝{colors.RESET.value}")
@@ -142,11 +151,13 @@ class Menu():
                         grid.reset_grid()
                         grid.dfs_generator()
                         grid.maze_solver()
+                        grid.generate_txt(config.OUTPUT_FILE)
                         self.run_menu(grid)
                     elif grid.algo == "kruskal":
                         grid.reset_grid()
                         grid.kruskal_generator()
                         grid.maze_solver()
+                        grid.generate_txt(config.OUTPUT_FILE)
                         self.run_menu(grid)
                 elif user_choice == "2":
                     if grid.visible_path is False:
@@ -160,15 +171,9 @@ class Menu():
 
                 elif user_choice == "3":
                     if grid.algo == "dfs":
-                        grid.reset_grid()
-                        grid.kruskal_generator()
-                        grid.maze_solver()
                         grid.algo = "kruskal"
                         self.run_menu(grid)
                     elif grid.algo == "kruskal":
-                        grid.reset_grid()
-                        grid.dfs_generator()
-                        grid.maze_solver()
                         grid.algo = "dfs"
                         self.run_menu(grid)
                 elif user_choice == "4":
@@ -179,6 +184,12 @@ class Menu():
                         grid.animation = False
                     else:
                         grid.animation = True
+                    self.run_menu(grid)
+                elif user_choice == "6":
+                    if grid.is_perfect:
+                        grid.is_perfect = False
+                    else:
+                        grid.is_perfect = True
                     self.run_menu(grid)
                 elif user_choice == "q":
                     print("Goodbye")

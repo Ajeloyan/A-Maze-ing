@@ -15,7 +15,7 @@ def main() -> None:
     grid.dfs_generator()
     grid.maze_solver()
     grid.draw_grid()
-    # grid.generate_txt(config.OUTPUT_FILE)
+    grid.generate_txt(config.OUTPUT_FILE)
     try:
         menu.run_menu(grid)
     except Exception as e:

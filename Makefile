@@ -27,7 +27,7 @@ lint:
 		--check-untyped-defs .
 
 lint-strict:
-	@-poetry run  flake8 . --exclude env
+	@-poetry run  flake8 . --exclude .env2
 	@-poetry run  mypy --strict .
 
 build:

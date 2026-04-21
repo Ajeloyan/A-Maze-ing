@@ -387,13 +387,28 @@ class Grid:
 
     def imperfect_maze(self) -> None:
         i: int = 0
+        cell_broken: list[Cell] = []
         for y in range(self.height - 1):
             for x in range(self.width - 1):
                 current_cell = self.matrix[y][x]
                 next_cell = self.matrix[y + 1][x]
-                if i % 10 == 0:
-                    self.break_wall(current_cell, next_cell)
+                if i % 7 == 0:
+                    if current_cell.fixed is False and next_cell.fixed is \
+                       False and self.cell_around(y, x, cell_broken) is False:
+                        self.break_wall(current_cell, next_cell)
+                        cell_broken.append((current_cell, next_cell))
                 i += 1
+
+    def cell_around(self, y: int, x: int, list_cell: list[Cell]) -> bool:
+        if self.matrix[y - 1][x] in list_cell\
+              or self.matrix[y - 1][x - 1] in list_cell \
+              or self.matrix[y][x - 1] in list_cell \
+              or self.matrix[y + 1][x - 1] in list_cell \
+              or self.matrix[y + 1][x] in list_cell \
+              or self.matrix[y + 1][x + 1] in list_cell \
+              or self.matrix[y][x + 1]:
+            return False
+        return True
 
     def get_direction(self, path) -> str:
         dirlist = []
