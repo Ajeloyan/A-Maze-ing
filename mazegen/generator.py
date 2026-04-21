@@ -113,6 +113,7 @@ class Grid:
         self.seed = config.SEED
         if self.width >= 11 and self.height >= 10:
             self.forty_two()
+        self.animation = True
 
     def coloration(self, cell, text):
         if cell.in_path and (text is Tiles.PATH_TOP.value or
@@ -279,8 +280,8 @@ class Grid:
                     for x in range(self.width):
                         if self.matrix[y][x].id == check_id:
                             self.matrix[y][x].id = cell_b.id
-
-            # self.draw_grid()
+            if self.animation:
+                self.draw_grid()
         self.is_digged = True
         if self.is_perfect is False:
             self.imperfect_maze()
@@ -373,7 +374,8 @@ class Grid:
                 self.break_wall(current, next_cell)
                 path.append(next_cell)
                 visited.add(next_cell)
-                # self.draw_grid()
+                if self.animation:
+                    self.draw_grid()
             else:
                 path.pop()
         if self.is_perfect is False:

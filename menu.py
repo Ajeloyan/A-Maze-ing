@@ -114,23 +114,26 @@ class Menu():
                   "         ╚═╝╚═╝  ╚═══╝ ╚═════╝ ")
             print(f"{colors.RESET.value}")
             print(f"{colors.RESET.value}")
-            print(f"{colors.CYAN.value}    ╔═════════════════════════╗")
+            print(f"{colors.CYAN.value}    ╔═══════════════════════════╗")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"1.{colors.RESET.value} Generate new maze   "
+                  f"1.{colors.RESET.value} Generate new maze     "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"2.{colors.RESET.value} Show/hide path      "
+                  f"2.{colors.RESET.value} Show/hide path        "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"3.{colors.RESET.value} Change algo         "
+                  f"3.{colors.RESET.value} Change algo           "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"4.{colors.RESET.value} Change color        "
+                  f"4.{colors.RESET.value} Change color          "
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
-                  f"q.{colors.RESET.value} Quit                "
+                  f"5.{colors.RESET.value} Show/Unshow animation "
                   f"{colors.CYAN.value}║")
-            print(f"    ╚═════════════════════════╝{colors.RESET.value}")
+            print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
+                  f"q.{colors.RESET.value} Quit                  "
+                  f"{colors.CYAN.value}║")
+            print(f"    ╚═══════════════════════════╝{colors.RESET.value}")
 
             try:
                 user_choice: str = input("Please, enter a choice: ")
@@ -146,11 +149,11 @@ class Menu():
                         grid.maze_solver()
                         self.run_menu(grid)
                 elif user_choice == "2":
-                    if grid.visible_path == False:
+                    if grid.visible_path is False:
                         grid.visible_path = True
                         grid.draw_grid()
                         self.run_menu(grid)
-                    elif grid.visible_path == True:
+                    elif grid.visible_path:
                         grid.visible_path = False
                         grid.draw_grid()
                         self.run_menu(grid)
@@ -171,6 +174,12 @@ class Menu():
                 elif user_choice == "4":
                     self.colors_menu(grid)
                     self.run_menu()
+                elif user_choice == "5":
+                    if grid.animation:
+                        grid.animation = False
+                    else:
+                        grid.animation = True
+                    self.run_menu(grid)
                 elif user_choice == "q":
                     print("Goodbye")
                     break
