@@ -21,14 +21,10 @@ clean:
 	@rm -rf __pycache__
 
 lint:
-	@python3 -m flake8 --exclude amazevenv .
+	@python3 -m flake8 --exclude .env2 .
 	@python3 -m mypy --warn-return-any --warn-unused-ignores \
 		--ignore-missing-imports --disallow-untyped-defs \
 		--check-untyped-defs .
-
-lint-strict:
-	@-poetry run  flake8 . --exclude .env2
-	@-poetry run  mypy --strict .
 
 build:
 	@poetry build 
