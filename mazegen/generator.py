@@ -1,6 +1,7 @@
-from .validator import MazeConfig
+from .validator import MazeConfig, Colors
 from enum import Enum
 from random import shuffle, choice, seed
+from typing import Any
 
 
 class Tiles(Enum):
@@ -43,7 +44,7 @@ class Cell:
             self.walls["east"] = True
             self.walls["west"] = True
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"{self.x}: {self.y}"
 
     def binary(self) -> None:
@@ -105,9 +106,9 @@ class Grid:
         self.EXIT = config.EXIT
         self.is_digged: bool = False
         self.is_perfect: bool = config.PERFECT
-        self.wall_color: str = config.WALL_COLOR
-        self.path_color: str = config.PATH_COLOR
-        self.spec_color: str = config.SPEC_COLOR
+        self.wall_color: Colors = config.WALL_COLOR
+        self.path_color: Colors = config.PATH_COLOR
+        self.spec_color: Colors = config.SPEC_COLOR
         self.visible_path: bool = False
         self.algo = "dfs"
         self.seed = config.SEED
@@ -115,7 +116,7 @@ class Grid:
             self.forty_two()
         self.animation = True
 
-    def coloration(self, cell, text):
+    def coloration(self, cell: Cell, text: str) -> str:
         if cell.in_path and (text is Tiles.PATH_TOP.value or
                              text is Tiles.PATH_BOT.value):
             return f"{self.path_color.define()}{text}\033[0m"
@@ -128,7 +129,10 @@ class Grid:
     def draw_grid(self) -> None:
         print("\033[H")
         if self.matrix[self.ENTRY[1]][self.ENTRY[0]].fixed:
-            print("ERROR")
+            raise ValueError("Error: Entry must be"
+                             " in a valid Cell (out of 42)")
+        elif self.matrix[self.EXIT[1]][self.EXIT[0]].fixed:
+            raise ValueError("Error: Exit must be in a valid Cell (out of 42)")
         for y in range(self.height):
             for x in range(self.width):
                 cell = self.matrix[y][x]
@@ -324,7 +328,7 @@ class Grid:
         end.spec = True
 
         queue = deque([start])
-        visited = {start: None}
+        visited: dict[Cell, Any] = {start: None}
         while queue:
 
             current = queue.popleft()
@@ -396,7 +400,8 @@ class Grid:
                     if current_cell.fixed is False and next_cell.fixed is \
                        False and self.cell_around(y, x, cell_broken) is False:
                         self.break_wall(current_cell, next_cell)
-                        cell_broken.append((current_cell, next_cell))
+                        cell_broken.append(current_cell)
+                        cell_broken.append(next_cell)
                 i += 1
 
     def cell_around(self, y: int, x: int, list_cell: list[Cell]) -> bool:
@@ -410,7 +415,7 @@ class Grid:
             return False
         return True
 
-    def get_direction(self, path) -> str:
+    def get_direction(self, path: list[Cell]) -> str:
         dirlist = []
         i = 0
         while i < len(path) - 1:

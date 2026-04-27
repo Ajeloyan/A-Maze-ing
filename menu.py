@@ -209,7 +209,7 @@ class Menu():
                         self.run_menu(grid)
                 elif user_choice == "4":
                     self.colors_menu(grid)
-                    self.run_menu()
+                    self.run_menu(grid)
                 elif user_choice == "5":
                     if grid.animation:
                         grid.animation = False

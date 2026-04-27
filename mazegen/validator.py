@@ -14,7 +14,7 @@ class Colors(Enum):
     WHITE = "WHITE"
     MULTI = "MULTI"
 
-    def define(self):
+    def define(self) -> str:
         if self == Colors.MULTI:
             col = [
                 "\033[38;2;255;160;81m",
@@ -108,6 +108,6 @@ def parsing(file: str) -> MazeConfig:
 
         return MazeConfig(**config)
 
-    except (KeyError, ValueError) as e:
-        print(f"Parsing error:{e.errors()[0]["loc"]} {e.errors()[0]["msg"]}")
+    except Exception as e:
+        print(f"Parsing error:{e}")
         sys.exit(1)
