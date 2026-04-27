@@ -21,7 +21,7 @@ clean:
 	@rm -rf __pycache__
 
 lint:
-	@python3 -m flake8 --exclude .env2 .
+	@python3 -m flake8 *.py
 	@python3 -m mypy --warn-return-any --warn-unused-ignores \
 		--ignore-missing-imports --disallow-untyped-defs \
 		--check-untyped-defs .

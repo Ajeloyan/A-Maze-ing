@@ -1,4 +1,4 @@
-from pydantic import BaseModel, model_validator, Field
+from pydantic import BaseModel, model_validator, Field, ValidationError
 from typing import Self, Optional
 import sys
 from enum import Enum
@@ -108,6 +108,9 @@ def parsing(file: str) -> MazeConfig:
 
         return MazeConfig(**config)
 
+    except ValidationError as e:
+        print(e.errors()[0]["msg"].split(",")[1].strip())
+        sys.exit(1)
     except Exception as e:
         print(f"Parsing error:{e}")
         sys.exit(1)
