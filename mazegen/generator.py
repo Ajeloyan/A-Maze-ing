@@ -23,122 +23,119 @@ class Tiles(Enum):
     PATH_TOP = " ████ "
     PATH_BOT = " ▀▀▀▀ "
 
+class MazeGenerator:
+    class Cell:
+        """Represent a single cell of the maze grid.
 
-class Cell:
-    """Represent a single cell of the maze grid.
+        A cell stores its coordinates, surrounding walls, state flags and
+        encoded representations used for export.
 
-    A cell stores its coordinates, surrounding walls, state flags and
-    encoded representations used for export.
-
-    Attributes:
-        x: Horizontal coordinate in the grid.
-        y: Vertical coordinate in the grid.
-        walls: Presence of walls on each side.
-        is_visited: Indicates whether the cell was visited.
-        bin: Binary wall representation in NESW order.
-        hex: Hexadecimal representation derived from ``bin``.
-        fixed: Indicates that the cell is blocked and cannot be carved.
-        id: Identifier used by Kruskal's algorithm.
-        in_path: Indicates that the cell belongs to the solved path.
-        spec: Marks special cells such as entry and exit.
-    """
-    def __init__(self, x: int, y: int) -> None:
-        self.x: int = x
-        self.y: int = y
-        self.walls = {
-            "north": True,
-            "south": True,
-            "east": True,
-            "west": True
-        }
-        self.is_visited = False
-        self.bin: list[int] = [0, 0, 0, 0]
-        self.hex: str = ""
-        self.fixed: bool = False
-        self.id: int = 0
-        self.in_path = False
-        self.spec = False
-
-    def is_fixed(self) -> None:
-        """Force all walls to remain closed when the cell is fixed.
-
-        This method is intended for blocked cells that must never be part
-        of the traversable maze.
+        Attributes:
+            x: Horizontal coordinate in the grid.
+            y: Vertical coordinate in the grid.
+            walls: Presence of walls on each side.
+            is_visited: Indicates whether the cell was visited.
+            bin: Binary wall representation in NESW order.
+            hex: Hexadecimal representation derived from ``bin``.
+            fixed: Indicates that the cell is blocked and cannot be carved.
+            id: Identifier used by Kruskal's algorithm.
+            in_path: Indicates that the cell belongs to the solved path.
+            spec: Marks special cells such as entry and exit.
         """
-        if self.fixed is True:
-            self.walls["north"] = True
-            self.walls["south"] = True
-            self.walls["east"] = True
-            self.walls["west"] = True
+        def __init__(self, x: int, y: int) -> None:
+            self.x: int = x
+            self.y: int = y
+            self.walls = {
+                "north": True,
+                "south": True,
+                "east": True,
+                "west": True
+            }
+            self.is_visited = False
+            self.bin: list[int] = [0, 0, 0, 0]
+            self.hex: str = ""
+            self.fixed: bool = False
+            self.id: int = 0
+            self.in_path = False
+            self.spec = False
 
-    def __repr__(self) -> str:
-        """Return a developer-friendly representation of the cell.
+        def is_fixed(self) -> None:
+            """Force all walls to remain closed when the cell is fixed.
 
-        Returns:
-            Coordinates formatted as ``"x: y"``.
-        """
-        return f"{self.x}: {self.y}"
+            This method is intended for blocked cells that must never be part
+            of the traversable maze.
+            """
+            if self.fixed is True:
+                self.walls["north"] = True
+                self.walls["south"] = True
+                self.walls["east"] = True
+                self.walls["west"] = True
 
-    def binary(self) -> None:
-        """Compute the binary wall representation of the cell.
+        def __repr__(self) -> str:
+            """Return a developer-friendly representation of the cell.
 
-        The wall order is:
+            Returns:
+                Coordinates formatted as ``"x: y"``.
+            """
+            return f"{self.x}: {self.y}"
 
-        * index 0: north
-        * index 1: east
-        * index 2: south
-        * index 3: west
-        """
-        if self.walls["north"] is True:
-            self.bin[0] = 1
-        if self.walls["east"] is True:
-            self.bin[1] = 1
-        if self.walls["south"] is True:
-            self.bin[2] = 1
-        if self.walls["west"] is True:
-            self.bin[3] = 1
+        def binary(self) -> None:
+            """Compute the binary wall representation of the cell.
 
-    def hexa(self) -> None:
-        """Convert the binary wall representation into hexadecimal.
+            The wall order is:
 
-        The result is stored in ``self.hex`` as a single hexadecimal
-        character between ``0`` and ``F``.
-        """
-        if self.bin == [0, 0, 0, 0]:
-            self.hex = "0"
-        elif self.bin == [0, 0, 0, 1]:
-            self.hex = "1"
-        elif self.bin == [0, 0, 1, 0]:
-            self.hex = "2"
-        elif self.bin == [0, 0, 1, 1]:
-            self.hex = "3"
-        elif self.bin == [0, 1, 0, 0]:
-            self.hex = "4"
-        elif self.bin == [0, 1, 0, 1]:
-            self.hex = "5"
-        elif self.bin == [0, 1, 1, 0]:
-            self.hex = "6"
-        elif self.bin == [0, 1, 1, 1]:
-            self.hex = "7"
-        elif self.bin == [1, 0, 0, 0]:
-            self.hex = "8"
-        elif self.bin == [1, 0, 0, 1]:
-            self.hex = "9"
-        elif self.bin == [1, 0, 1, 0]:
-            self.hex = "A"
-        elif self.bin == [1, 0, 1, 1]:
-            self.hex = "B"
-        elif self.bin == [1, 1, 0, 0]:
-            self.hex = "C"
-        elif self.bin == [1, 1, 0, 1]:
-            self.hex = "D"
-        elif self.bin == [1, 1, 1, 0]:
-            self.hex = "E"
-        elif self.bin == [1, 1, 1, 1]:
-            self.hex = "F"
+            * index 0: north
+            * index 1: east
+            * index 2: south
+            * index 3: west
+            """
+            if self.walls["north"] is True:
+                self.bin[0] = 1
+            if self.walls["east"] is True:
+                self.bin[1] = 1
+            if self.walls["south"] is True:
+                self.bin[2] = 1
+            if self.walls["west"] is True:
+                self.bin[3] = 1
 
+        def hexa(self) -> None:
+            """Convert the binary wall representation into hexadecimal.
 
-class Grid:
+            The result is stored in ``self.hex`` as a single hexadecimal
+            character between ``0`` and ``F``.
+            """
+            if self.bin == [0, 0, 0, 0]:
+                self.hex = "0"
+            elif self.bin == [0, 0, 0, 1]:
+                self.hex = "1"
+            elif self.bin == [0, 0, 1, 0]:
+                self.hex = "2"
+            elif self.bin == [0, 0, 1, 1]:
+                self.hex = "3"
+            elif self.bin == [0, 1, 0, 0]:
+                self.hex = "4"
+            elif self.bin == [0, 1, 0, 1]:
+                self.hex = "5"
+            elif self.bin == [0, 1, 1, 0]:
+                self.hex = "6"
+            elif self.bin == [0, 1, 1, 1]:
+                self.hex = "7"
+            elif self.bin == [1, 0, 0, 0]:
+                self.hex = "8"
+            elif self.bin == [1, 0, 0, 1]:
+                self.hex = "9"
+            elif self.bin == [1, 0, 1, 0]:
+                self.hex = "A"
+            elif self.bin == [1, 0, 1, 1]:
+                self.hex = "B"
+            elif self.bin == [1, 1, 0, 0]:
+                self.hex = "C"
+            elif self.bin == [1, 1, 0, 1]:
+                self.hex = "D"
+            elif self.bin == [1, 1, 1, 0]:
+                self.hex = "E"
+            elif self.bin == [1, 1, 1, 1]:
+                self.hex = "F"
     """Represent the full maze grid and all related operations.
 
     The grid owns every cell and provides methods to generate, solve,
@@ -160,7 +157,7 @@ class Grid:
         """Initialize the maze grid from configuration."""
         self.width: int = config.WIDTH
         self.height: int = config.HEIGHT
-        self.matrix: list[list[Cell]] = [[Cell(x, y) for
+        self.matrix: list[list[Cell]] = [[MazeGenerator.Cell(x, y) for
                                           x in range(self.width)]
                                          for y in range(self.height)]
         self.count_tot = self.width * self.height
@@ -667,3 +664,7 @@ class Grid:
                 cell.in_path = False
                 cell.spec = False
                 cell.is_visited = False
+    def maze_generation(self) -> None:
+        self.dfs_generator()
+        self.maze_solver()
+        self.draw_grid()

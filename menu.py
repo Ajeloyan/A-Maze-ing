@@ -1,5 +1,5 @@
 from enum import Enum
-from mazegen.generator import Grid
+from mazegen.generator import MazeGenerator
 import sys
 import time
 from mazegen.validator import Colors
@@ -20,7 +20,7 @@ class Menu():
     def clear_screen(self) -> None:
         print("\033[2J\033[H\033[3J", end="", flush=True)
 
-    def colors_menu(self, grid: Grid) -> None:
+    def colors_menu(self, grid: MazeGenerator) -> None:
         while True:
             self.clear_screen()
             grid.draw_grid()
@@ -96,7 +96,7 @@ class Menu():
                 print(e)
                 sys.exit(1)
 
-    def run_menu(self, grid: Grid) -> None:
+    def run_menu(self, grid: MazeGenerator) -> None:
         try:
             config = parsing(sys.argv[1])
         except Exception as e:

@@ -1,4 +1,4 @@
-from mazegen.generator import Grid
+from mazegen.generator import MazeGenerator
 from mazegen.validator import parsing
 import sys
 from menu import Menu
@@ -7,13 +7,11 @@ from menu import Menu
 def main() -> None:
     try:
         config = parsing(sys.argv[1])
-        grid = Grid(config)
+        maze = MazeGenerator(config)
         menu = Menu()
-        grid.dfs_generator()
-        grid.maze_solver()
-        grid.draw_grid()
-        grid.generate_txt(config.OUTPUT_FILE)
-        menu.run_menu(grid)
+        maze.maze_generation()
+        maze.generate_txt(config.OUTPUT_FILE)
+        menu.run_menu(maze)
     except Exception as e:
         print(e)
         sys.exit(1)
