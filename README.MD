@@ -205,7 +205,7 @@ AI Usage
 
 AI tools were used as assistance for:
 
-Documentation drafting
+Understanding the differents algos available
 English wording improvements
 
 All design, implementation, debugging, and project decisions were made by the team.

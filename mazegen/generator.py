@@ -5,6 +5,11 @@ from typing import Any
 
 
 class Tiles(Enum):
+    """Enumeration of glyph patterns used to render the maze in terminal.
+
+    Each member stores a string segment used to draw walls, paths,
+    intersections or fixed cells.
+    """
     WALL_H = "▀▀▀▀▀▀"
     PATH_H = "      "
     MID_NO = " "
@@ -20,6 +25,23 @@ class Tiles(Enum):
 
 
 class Cell:
+    """Represent a single cell of the maze grid.
+
+    A cell stores its coordinates, surrounding walls, state flags and
+    encoded representations used for export.
+
+    Attributes:
+        x: Horizontal coordinate in the grid.
+        y: Vertical coordinate in the grid.
+        walls: Presence of walls on each side.
+        is_visited: Indicates whether the cell was visited.
+        bin: Binary wall representation in NESW order.
+        hex: Hexadecimal representation derived from ``bin``.
+        fixed: Indicates that the cell is blocked and cannot be carved.
+        id: Identifier used by Kruskal's algorithm.
+        in_path: Indicates that the cell belongs to the solved path.
+        spec: Marks special cells such as entry and exit.
+    """
     def __init__(self, x: int, y: int) -> None:
         self.x: int = x
         self.y: int = y
@@ -38,6 +60,11 @@ class Cell:
         self.spec = False
 
     def is_fixed(self) -> None:
+        """Force all walls to remain closed when the cell is fixed.
+
+        This method is intended for blocked cells that must never be part
+        of the traversable maze.
+        """
         if self.fixed is True:
             self.walls["north"] = True
             self.walls["south"] = True
@@ -45,9 +72,23 @@ class Cell:
             self.walls["west"] = True
 
     def __repr__(self) -> str:
+        """Return a developer-friendly representation of the cell.
+
+        Returns:
+            Coordinates formatted as ``"x: y"``.
+        """
         return f"{self.x}: {self.y}"
 
     def binary(self) -> None:
+        """Compute the binary wall representation of the cell.
+
+        The wall order is:
+
+        * index 0: north
+        * index 1: east
+        * index 2: south
+        * index 3: west
+        """
         if self.walls["north"] is True:
             self.bin[0] = 1
         if self.walls["east"] is True:
@@ -58,6 +99,11 @@ class Cell:
             self.bin[3] = 1
 
     def hexa(self) -> None:
+        """Convert the binary wall representation into hexadecimal.
+
+        The result is stored in ``self.hex`` as a single hexadecimal
+        character between ``0`` and ``F``.
+        """
         if self.bin == [0, 0, 0, 0]:
             self.hex = "0"
         elif self.bin == [0, 0, 0, 1]:
@@ -93,7 +139,25 @@ class Cell:
 
 
 class Grid:
+    """Represent the full maze grid and all related operations.
+
+    The grid owns every cell and provides methods to generate, solve,
+    display and export the maze.
+
+    Args:
+        config: Validated configuration object containing maze settings.
+
+    Attributes:
+        width: Number of columns.
+        height: Number of rows.
+        matrix: Two-dimensional list of ``Cell`` instances.
+        ENTRY: Entry coordinates.
+        EXIT: Exit coordinates.
+        is_perfect: Whether the maze has a unique path.
+        animation: Whether intermediate rendering is enabled.
+    """
     def __init__(self, config: MazeConfig) -> None:
+        """Initialize the maze grid from configuration."""
         self.width: int = config.WIDTH
         self.height: int = config.HEIGHT
         self.matrix: list[list[Cell]] = [[Cell(x, y) for
@@ -117,6 +181,17 @@ class Grid:
         self.animation = True
 
     def coloration(self, cell: Cell, text: str) -> str:
+        """Apply ANSI coloring to a rendered tile.
+
+        Path cells, special cells and walls may use different colors.
+
+        Args:
+            cell: Cell associated with the tile.
+            text: Raw tile text.
+
+        Returns:
+            Colored string ready for terminal output.
+        """
         if cell.in_path and (text is Tiles.PATH_TOP.value or
                              text is Tiles.PATH_BOT.value):
             return f"{self.path_color.define()}{text}\033[0m"
@@ -127,6 +202,11 @@ class Grid:
             return f"{self.wall_color.define()}{text}\033[0m"
 
     def draw_grid(self) -> None:
+        """Render the complete maze in terminal.
+
+        Raises:
+            ValueError: If entry or exit is placed inside a fixed cell.
+        """
         print("\033[H")
         if self.matrix[self.ENTRY[1]][self.ENTRY[0]].fixed:
             raise ValueError("Error: Entry must be"
@@ -191,12 +271,22 @@ class Grid:
               flush=True)
 
     def mid_cellule(self) -> Cell:
+        """Return the central cell of the grid.
+
+        Returns:
+            Cell located at integer midpoint of the grid.
+        """
         x = self.width // 2
         y = self.height // 2
         mid_cell: Cell = self.matrix[y][x]
         return mid_cell
 
     def forty_two(self) -> None:
+        """Create a fixed obstacle pattern shaped as ``42``.
+
+        This pattern is inserted near the center of sufficiently large
+        grids.
+        """
         mid_cell: Cell = self.mid_cellule()
         x: int = mid_cell.x
         y: int = mid_cell.y
@@ -234,6 +324,12 @@ class Grid:
             self.matrix[y + i + 1][x + 1].fixed = True
 
     def break_wall(self, cell_a: Cell, cell_b: Cell) -> None:
+        """Open the wall between two adjacent cells.
+
+        Args:
+            cell_a: First adjacent cell.
+            cell_b: Second adjacent cell.
+        """
         if cell_b.x > cell_a.x:
             cell_b.walls["west"] = False
             cell_a.walls["east"] = False
@@ -248,6 +344,12 @@ class Grid:
             cell_b.walls["south"] = False
 
     def add_wall(self, cell_a: Cell, cell_b: Cell) -> None:
+        """Restore the wall between two adjacent cells.
+
+        Args:
+            cell_a: First adjacent cell.
+            cell_b: Second adjacent cell.
+        """
         if cell_b.x > cell_a.x:
             cell_b.walls["west"] = True
             cell_a.walls["east"] = True
@@ -262,6 +364,11 @@ class Grid:
             cell_b.walls["south"] = True
 
     def kruskal_generator(self) -> None:
+        """Generate a maze using Kruskal's algorithm.
+
+        Cells are progressively merged into connected sets while removing
+        walls between disjoint regions.
+        """
         i = 1
         walls: list = []
         seed(self.seed)
@@ -295,6 +402,16 @@ class Grid:
                 self.matrix[y][x].hexa()
 
     def get_neighbors(self, cell: Cell) -> list:
+        """Return accessible neighboring cells.
+
+        Only neighbors connected by an open wall are returned.
+
+        Args:
+            cell: Source cell.
+
+        Returns:
+            List of reachable adjacent cells.
+        """
         neighbors = []
         x, y = cell.x, cell.y
         if not cell.walls["north"] and y > 0:
@@ -308,6 +425,16 @@ class Grid:
         return neighbors
 
     def get_neighbors_bis(self, cell: Cell) -> list:
+        """Return blocked neighboring cells.
+
+        Only neighbors separated by a wall are returned.
+
+        Args:
+            cell: Source cell.
+
+        Returns:
+            List of adjacent cells still separated by walls.
+        """
         neighbors = []
         x, y = cell.x, cell.y
         if cell.walls["north"] and y > 0:
@@ -321,6 +448,13 @@ class Grid:
         return neighbors
 
     def maze_solver(self) -> list:
+        """Solve the maze using breadth-first search.
+
+        The shortest path between entry and exit is searched.
+
+        Returns:
+            Ordered list of cells from entry to exit.
+        """
         from collections import deque
         start = self.matrix[self.ENTRY[1]][self.ENTRY[0]]
         end = self.matrix[self.EXIT[1]][self.EXIT[0]]
@@ -355,6 +489,11 @@ class Grid:
         return path[::-1]
 
     def dfs_generator(self) -> None:
+        """Generate a maze using recursive backtracking logic.
+
+        This iterative implementation uses a stack and random neighbor
+        selection.
+        """
         start = self.matrix[0][0]
         path: list[Cell] = [start]
         i = 0
@@ -390,6 +529,11 @@ class Grid:
                 self.matrix[y][x].hexa()
 
     def imperfect_maze(self) -> None:
+        """Introduce additional openings to create loops.
+
+        This method removes selected walls after generation to produce a
+        non-perfect maze with multiple possible paths.
+        """
         i: int = 0
         cell_broken: list[Cell] = []
         for y in range(self.height - 1):
@@ -405,6 +549,17 @@ class Grid:
                 i += 1
 
     def cell_around(self, y: int, x: int, list_cell: list[Cell]) -> bool:
+        """Check whether surrounding cells are absent from a reference list.
+
+        Args:
+            y: Row index of inspected cell.
+            x: Column index of inspected cell.
+            list_cell: Cells already modified.
+
+        Returns:
+            ``True`` if surrounding cells are free of conflicts,
+            otherwise ``False``.
+        """
         if self.matrix[y - 1][x] in list_cell\
               or self.matrix[y - 1][x - 1] in list_cell \
               or self.matrix[y][x - 1] in list_cell \
@@ -416,6 +571,16 @@ class Grid:
         return True
 
     def get_direction(self, path: list[Cell]) -> str:
+        """Convert a solved path into compass directions.
+
+        Directions use the letters ``N``, ``E``, ``S`` and ``W``.
+
+        Args:
+            path: Ordered path of cells.
+
+        Returns:
+            Concatenated direction string.
+        """
         dirlist = []
         i = 0
         while i < len(path) - 1:
@@ -434,6 +599,11 @@ class Grid:
         return final
 
     def get_hexa(self) -> str:
+        """Serialize the grid into hexadecimal wall codes.
+
+        Returns:
+            Multiline string containing one hexadecimal code per cell.
+        """
         result = []
         for y in range(self.height):
             for x in range(self.width):
@@ -444,12 +614,30 @@ class Grid:
         return final
 
     def get_entry(self) -> str:
+        """Return the formatted entry coordinates.
+
+        Returns:
+            Entry coordinates followed by a newline.
+        """
         return f"{self.ENTRY[0]}, {self.ENTRY[1]}\n"
 
     def get_exit(self) -> str:
+        """Return the formatted exit coordinates.
+
+        Returns:
+            Exit coordinates followed by a newline.
+        """
         return f"{self.EXIT[0]}, {self.EXIT[1]}\n"
 
     def generate_txt(self, output: str) -> None:
+        """Export the maze and its solution to a text file.
+
+        The file contains hexadecimal encoding, entry and exit positions,
+        then the direction string of the solved path.
+
+        Args:
+            output: Destination file path.
+        """
         path = self.maze_solver()
         try:
             with open(output, "w") as file:
@@ -467,6 +655,10 @@ class Grid:
         return
 
     def reset_grid(self) -> None:
+        """Restore the grid to its initial closed state.
+
+        All walls are rebuilt and path markers are cleared.
+        """
         for y in range(self.height):
             for x in range(self.width):
                 cell = self.matrix[y][x]
