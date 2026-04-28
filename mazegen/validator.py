@@ -2,7 +2,6 @@
 
 This module defines:
 
-* ``Colors``: terminal color presets using ANSI escape sequences.
 * ``MazeConfig``: validated configuration schema powered by Pydantic.
 * ``parsing``: helper function that reads a configuration file and
   returns a validated ``MazeConfig`` instance.
@@ -15,57 +14,7 @@ from typing import Self, Optional
 import sys
 from enum import Enum
 from random import choice
-
-
-class Colors(Enum):
-    """Enumeration of supported terminal colors.
-
-    Each member represents a named color preset used during maze
-    rendering. ANSI escape codes are generated through :meth:`define`.
-
-    Attributes:
-        ORANGE: Orange foreground color.
-        SALMON: Salmon foreground color.
-        GREEN: Green foreground color.
-        CYAN: Cyan foreground color.
-        PURPLE: Purple foreground color.
-        WHITE: Default terminal color.
-        MULTI: Randomly selected color among predefined presets.
-    """
-    ORANGE = "ORANGE"
-    SALMON = "SALMON"
-    GREEN = "GREEN"
-    CYAN = "CYAN"
-    PURPLE = "PURPLE"
-    WHITE = "WHITE"
-    MULTI = "MULTI"
-
-    def define(self) -> str:
-        """Return the ANSI escape sequence for the selected color.
-
-        If the color is ``MULTI``, one preset is randomly chosen each
-        time the method is called.
-
-        Returns:
-            ANSI escape sequence usable in terminal output.
-        """
-        if self == Colors.MULTI:
-            col = [
-                "\033[38;2;255;160;81m",
-                "\033[38;2;248;118;102m",
-                "\033[38;2;99;184;155m",
-                "\033[38;2;80;167;194m",
-                "\033[38;2;131;103;166m",
-            ]
-            return choice(col)
-        return {
-            "ORANGE": "\033[38;2;255;160;81m",
-            "SALMON": "\033[38;2;248;118;102m",
-            "GREEN": "\033[38;2;99;184;155m",
-            "CYAN": "\033[38;2;80;167;194m",
-            "PURPLE": "\033[38;2;131;103;166m",
-            "WHITE": "\033[0;m"
-        }[self.value]
+from .generator import Colors
 
 
 class MazeConfig(BaseModel):

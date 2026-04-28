@@ -1,9 +1,7 @@
 from enum import Enum
-from mazegen.generator import MazeGenerator
+from mazegen.generator import MazeGenerator, Colors
 import sys
 import time
-from mazegen.validator import Colors
-from mazegen.validator import parsing
 
 
 class colors(Enum):
@@ -97,11 +95,6 @@ class Menu():
                 sys.exit(1)
 
     def run_menu(self, grid: MazeGenerator) -> None:
-        try:
-            config = parsing(sys.argv[1])
-        except Exception as e:
-            print(e)
-            sys.exit(1)
         while True:
             self.clear_screen()
             grid.draw_grid()
@@ -180,15 +173,11 @@ class Menu():
                 if user_choice == "1":
                     if grid.algo == "dfs":
                         grid.reset_grid()
-                        grid.dfs_generator()
-                        grid.maze_solver()
-                        grid.generate_txt(config.OUTPUT_FILE)
+                        grid.dfs_generation()
                         self.run_menu(grid)
                     elif grid.algo == "kruskal":
                         grid.reset_grid()
-                        grid.kruskal_generator()
-                        grid.maze_solver()
-                        grid.generate_txt(config.OUTPUT_FILE)
+                        grid.kruskal_generation()
                         self.run_menu(grid)
                 elif user_choice == "2":
                     if grid.visible_path is False:

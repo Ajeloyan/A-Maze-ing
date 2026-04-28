@@ -1,7 +1,60 @@
-from .validator import MazeConfig, Colors
+from __future__ import annotations
 from enum import Enum
 from random import shuffle, choice, seed
-from typing import Any
+from typing import Any, TYPE_CHECKING
+if TYPE_CHECKING:
+    from .validator import MazeConfig
+
+
+class Colors(Enum):
+    """Enumeration of supported terminal colors.
+
+    Each member represents a named color preset used during maze
+    rendering. ANSI escape codes are generated through :meth:`define`.
+
+    Attributes:
+        ORANGE: Orange foreground color.
+        SALMON: Salmon foreground color.
+        GREEN: Green foreground color.
+        CYAN: Cyan foreground color.
+        PURPLE: Purple foreground color.
+        WHITE: Default terminal color.
+        MULTI: Randomly selected color among predefined presets.
+    """
+    ORANGE = "ORANGE"
+    SALMON = "SALMON"
+    GREEN = "GREEN"
+    CYAN = "CYAN"
+    PURPLE = "PURPLE"
+    WHITE = "WHITE"
+    MULTI = "MULTI"
+
+    def define(self) -> str:
+        """Return the ANSI escape sequence for the selected color.
+
+        If the color is ``MULTI``, one preset is randomly chosen each
+        time the method is called.
+
+        Returns:
+            ANSI escape sequence usable in terminal output.
+        """
+        if self == Colors.MULTI:
+            col = [
+                "\033[38;2;255;160;81m",
+                "\033[38;2;248;118;102m",
+                "\033[38;2;99;184;155m",
+                "\033[38;2;80;167;194m",
+                "\033[38;2;131;103;166m",
+            ]
+            return choice(col)
+        return {
+            "ORANGE": "\033[38;2;255;160;81m",
+            "SALMON": "\033[38;2;248;118;102m",
+            "GREEN": "\033[38;2;99;184;155m",
+            "CYAN": "\033[38;2;80;167;194m",
+            "PURPLE": "\033[38;2;131;103;166m",
+            "WHITE": "\033[0;m"
+        }[self.value]
 
 
 class Tiles(Enum):
@@ -13,7 +66,6 @@ class Tiles(Enum):
     WALL_H = "▀▀▀▀▀▀"
     PATH_H = "      "
     MID_NO = " "
-    MID_PATH = "       "
     JOINT_FULL = "█"
     JOINT_THIN = "▀"
     MID_WALL = "█"
@@ -34,7 +86,6 @@ class MazeGenerator:
             x: Horizontal coordinate in the grid.
             y: Vertical coordinate in the grid.
             walls: Presence of walls on each side.
-            is_visited: Indicates whether the cell was visited.
             bin: Binary wall representation in NESW order.
             hex: Hexadecimal representation derived from ``bin``.
             fixed: Indicates that the cell is blocked and cannot be carved.
@@ -51,25 +102,12 @@ class MazeGenerator:
                 "east": True,
                 "west": True
             }
-            self.is_visited = False
             self.bin: list[int] = [0, 0, 0, 0]
             self.hex: str = ""
             self.fixed: bool = False
             self.id: int = 0
             self.in_path = False
             self.spec = False
-
-        def is_fixed(self) -> None:
-            """Force all walls to remain closed when the cell is fixed.
-
-            This method is intended for blocked cells that must never be part
-            of the traversable maze.
-            """
-            if self.fixed is True:
-                self.walls["north"] = True
-                self.walls["south"] = True
-                self.walls["east"] = True
-                self.walls["west"] = True
 
         def __repr__(self) -> str:
             """Return a developer-friendly representation of the cell.
@@ -153,29 +191,54 @@ class MazeGenerator:
         is_perfect: Whether the maze has a unique path.
         animation: Whether intermediate rendering is enabled.
     """
-    def __init__(self, config: MazeConfig) -> None:
+    def __init__(self, config: MazeConfig | dict) -> None:
         """Initialize the maze grid from configuration."""
-        self.width: int = config.WIDTH
-        self.height: int = config.HEIGHT
-        self.matrix: list[list[MazeGenerator.Cell]] = [[MazeGenerator.Cell(x, y) for
-                                          x in range(self.width)]
-                                         for y in range(self.height)]
-        self.count_tot = self.width * self.height
-        self.all_visited: bool = True if self.count_tot == 0 else False
-        self.repeat: int = 10
-        self.ENTRY = config.ENTRY
-        self.EXIT = config.EXIT
-        self.is_digged: bool = False
-        self.is_perfect: bool = config.PERFECT
-        self.wall_color: Colors = config.WALL_COLOR
-        self.path_color: Colors = config.PATH_COLOR
-        self.spec_color: Colors = config.SPEC_COLOR
+
+        if isinstance(config, dict):
+            width: int = config["WIDTH"]
+            height: int = config["HEIGHT"]
+            entry: tuple[int, int] = config["ENTRY"]
+            exit_: tuple[int, int] = config["EXIT"]
+            is_perfect: bool = config.get("PERFECT", True)
+            wall_color: Colors = config.get("WALL_COLOR", Colors.MULTI)
+            path_color: Colors = config.get("PATH_COLOR", Colors.CYAN)
+            spec_color: Colors = config.get("SPEC_COLOR", Colors.PURPLE)
+            seed_value: int | None = config.get("SEED", None)
+            output_file: str = config.get("OUTPUT_FILE", "maze.txt")
+
+        else:
+            width = config.WIDTH
+            height = config.HEIGHT
+            entry = config.ENTRY
+            exit_ = config.EXIT
+            is_perfect = config.PERFECT
+            wall_color = config.WALL_COLOR
+            path_color = config.PATH_COLOR
+            spec_color = config.SPEC_COLOR
+            seed_value = config.SEED
+            output_file = config.OUTPUT_FILE
+
+        self.width: int = width
+        self.height: int = height
+
+        self.matrix: list[list[MazeGenerator.Cell]] = [
+            [MazeGenerator.Cell(x, y) for x in range(self.width)]
+            for y in range(self.height)
+        ]
+
+        self.ENTRY: tuple[int, int] = entry
+        self.EXIT: tuple[int, int] = exit_
+        self.is_perfect: bool = is_perfect
+        self.wall_color= wall_color
+        self.path_color = path_color
+        self.spec_color = spec_color
         self.visible_path: bool = False
-        self.algo = "dfs"
-        self.seed = config.SEED
+        self.algo: str = "dfs"
+        self.seed: int | None = seed_value
         if self.width >= 11 and self.height >= 10:
             self.forty_two()
-        self.animation = True
+        self.animation: bool = True
+        self.output_file = output_file
 
     def coloration(self, cell: Cell, text: str) -> str:
         """Apply ANSI coloring to a rendered tile.
@@ -287,35 +350,27 @@ class MazeGenerator:
         mid_cell: MazeGenerator.Cell = self.mid_cellule()
         x: int = mid_cell.x
         y: int = mid_cell.y
-        j: int = 1
         for j in range(1, 3):
             self.matrix[y][x - j].fixed = True
             self.matrix[y][x - j - 1].fixed = True
-        j = 0
         for j in range(0, 2):
             self.matrix[y - j][x - 3].fixed = True
             self.matrix[y - j - 1][x - 3].fixed = True
-        j = 0
         for j in range(1, 3):
             self.matrix[y + j][x - 1].fixed = True
             self.matrix[y + j - 1][x - 1].fixed = True
-        i: int = 1
         for i in range(1, 3):
             self.matrix[y][x + i].fixed = True
             self.matrix[y][x + i + 1].fixed = True
-        i = 1
         for i in range(1, 3):
             self.matrix[y - 2][x + i].fixed = True
             self.matrix[y - 2][x + i + 1].fixed = True
-        i = 1
         for i in range(1, 3):
             self.matrix[y + 2][x + i].fixed = True
             self.matrix[y + 2][x + i + 1].fixed = True
-        i = 1
         for i in range(0, 2):
             self.matrix[y - i][x + 3].fixed = True
             self.matrix[y - i - 1][x + 3].fixed = True
-        i = 1
         for i in range(0, 2):
             self.matrix[y + i][x + 1].fixed = True
             self.matrix[y + i + 1][x + 1].fixed = True
@@ -390,7 +445,6 @@ class MazeGenerator:
                             self.matrix[y][x].id = cell_b.id
             if self.animation:
                 self.draw_grid()
-        self.is_digged = True
         if self.is_perfect is False:
             self.imperfect_maze()
         for y in range(self.height):
@@ -493,7 +547,6 @@ class MazeGenerator:
         """
         start = self.matrix[0][0]
         path: list[MazeGenerator.Cell] = [start]
-        i = 0
         visited = {start}
         seed(self.seed)
         while path:
@@ -501,10 +554,6 @@ class MazeGenerator:
             for y in range(self.height - 1):
                 for x in range(self.width - 1):
                     cell = self.matrix[y][x]
-                    if i == self.width * self.height:
-                        break
-                    if cell.is_visited is True:
-                        i += 1
             neighbors = [
                 case for case in self.get_neighbors_bis(current)
                 if case not in visited and not case.fixed
@@ -626,7 +675,7 @@ class MazeGenerator:
         """
         return f"{self.EXIT[0]}, {self.EXIT[1]}\n"
 
-    def generate_txt(self, output: str) -> None:
+    def generate_txt(self) -> None:
         """Export the maze and its solution to a text file.
 
         The file contains hexadecimal encoding, entry and exit positions,
@@ -637,7 +686,7 @@ class MazeGenerator:
         """
         path = self.maze_solver()
         try:
-            with open(output, "w") as file:
+            with open(self.output_file, "w") as file:
 
                 hexa = self.get_hexa()
                 file.write(hexa)
@@ -663,8 +712,11 @@ class MazeGenerator:
                               "east": True, "west": True}
                 cell.in_path = False
                 cell.spec = False
-                cell.is_visited = False
-    def maze_generation(self) -> None:
+    def dfs_generation(self) -> None:
         self.dfs_generator()
         self.maze_solver()
-        self.draw_grid()
+        self.generate_txt()
+    def kruskal_generation(self) -> None:
+        self.dfs_generator()
+        self.maze_solver()
+        self.generate_txt()

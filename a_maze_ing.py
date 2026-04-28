@@ -9,8 +9,8 @@ def main() -> None:
         config = parsing(sys.argv[1])
         maze = MazeGenerator(config)
         menu = Menu()
-        maze.maze_generation()
-        maze.generate_txt(config.OUTPUT_FILE)
+        maze.dfs_generation()
+        maze.draw_grid()
         menu.run_menu(maze)
     except Exception as e:
         print(e)
