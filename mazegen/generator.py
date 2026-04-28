@@ -1,4 +1,3 @@
-from __future__ import annotations
 from enum import Enum
 from random import shuffle, choice, seed
 from typing import Any, TYPE_CHECKING
@@ -191,7 +190,7 @@ class MazeGenerator:
         is_perfect: Whether the maze has a unique path.
         animation: Whether intermediate rendering is enabled.
     """
-    def __init__(self, config: MazeConfig | dict) -> None:
+    def __init__(self, config: "MazeConfig | dict") -> None:
         """Initialize the maze grid from configuration."""
 
         if isinstance(config, dict):
