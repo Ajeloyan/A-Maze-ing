@@ -92,9 +92,9 @@ class MazeConfig(BaseModel):
     EXIT: tuple[int, int]
     OUTPUT_FILE: str
     PERFECT: bool = Field(default=True)
-    WALL_COLOR: Colors
-    PATH_COLOR: Colors
-    SPEC_COLOR: Colors
+    WALL_COLOR: Colors = Field(default=Colors.MULTI)
+    PATH_COLOR: Colors = Field(default=Colors.CYAN)
+    SPEC_COLOR: Colors = Field(default=Colors.PURPLE)
     SEED: Optional[int] = Field(default=None)
 
     @model_validator(mode='after')

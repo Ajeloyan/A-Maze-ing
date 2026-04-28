@@ -157,7 +157,7 @@ class MazeGenerator:
         """Initialize the maze grid from configuration."""
         self.width: int = config.WIDTH
         self.height: int = config.HEIGHT
-        self.matrix: list[list[Cell]] = [[MazeGenerator.Cell(x, y) for
+        self.matrix: list[list[MazeGenerator.Cell]] = [[MazeGenerator.Cell(x, y) for
                                           x in range(self.width)]
                                          for y in range(self.height)]
         self.count_tot = self.width * self.height
@@ -275,7 +275,7 @@ class MazeGenerator:
         """
         x = self.width // 2
         y = self.height // 2
-        mid_cell: Cell = self.matrix[y][x]
+        mid_cell: MazeGenerator.Cell = self.matrix[y][x]
         return mid_cell
 
     def forty_two(self) -> None:
@@ -284,7 +284,7 @@ class MazeGenerator:
         This pattern is inserted near the center of sufficiently large
         grids.
         """
-        mid_cell: Cell = self.mid_cellule()
+        mid_cell: MazeGenerator.Cell = self.mid_cellule()
         x: int = mid_cell.x
         y: int = mid_cell.y
         j: int = 1
@@ -459,7 +459,7 @@ class MazeGenerator:
         end.spec = True
 
         queue = deque([start])
-        visited: dict[Cell, Any] = {start: None}
+        visited: dict[MazeGenerator.Cell, Any] = {start: None}
         while queue:
 
             current = queue.popleft()
@@ -492,7 +492,7 @@ class MazeGenerator:
         selection.
         """
         start = self.matrix[0][0]
-        path: list[Cell] = [start]
+        path: list[MazeGenerator.Cell] = [start]
         i = 0
         visited = {start}
         seed(self.seed)
@@ -532,7 +532,7 @@ class MazeGenerator:
         non-perfect maze with multiple possible paths.
         """
         i: int = 0
-        cell_broken: list[Cell] = []
+        cell_broken: list[MazeGenerator.Cell] = []
         for y in range(self.height - 1):
             for x in range(self.width - 1):
                 current_cell = self.matrix[y][x]

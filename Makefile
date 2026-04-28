@@ -6,6 +6,7 @@ CONFIG = config.txt
 .PHONY: install run debug clean lint lint-strict build
 
 install:
+	@pip install poetry
 	@poetry install
 
 run:
