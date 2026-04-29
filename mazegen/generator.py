@@ -128,13 +128,13 @@ class MazeGenerator:
             * index 3: west
             """
             if self.walls["north"] is True:
-                self.bin[0] = 1
-            if self.walls["east"] is True:
-                self.bin[1] = 1
-            if self.walls["south"] is True:
-                self.bin[2] = 1
-            if self.walls["west"] is True:
                 self.bin[3] = 1
+            if self.walls["east"] is True:
+                self.bin[2] = 1
+            if self.walls["south"] is True:
+                self.bin[1] = 1
+            if self.walls["west"] is True:
+                self.bin[0] = 1
 
         def hexa(self) -> None:
             """Convert the binary wall representation into hexadecimal.
