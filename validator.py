@@ -9,7 +9,7 @@ This module defines:
 The configuration file is expected to contain ``KEY=VALUE`` pairs, with
 optional commented lines beginning with ``#``.
 """
-from pydantic import BaseModel, model_validator, Field, ValidationError
+from pydantic import BaseModel, model_validator, Field
 from typing import Self, Optional
 import sys
 from mazegen.generator import Colors
@@ -147,6 +147,9 @@ def parsing(file: str) -> MazeConfig:
             invalid.
     """
     config: dict = {}
+    keys: list[str] = ["WIDTH", "HEIGHT", "ENTRY", "EXIT",
+                       "OUTPUT_FILE", "PERFECT", "WALL_COLOR",
+                       "PATH_COLOR", "SPEC_COLOR", "SEED"]
 
     try:
         with open(file, "r") as f:
@@ -155,10 +158,18 @@ def parsing(file: str) -> MazeConfig:
                 if line.startswith("#"):
                     continue
                 if "=" not in line:
-                    continue
+                    raise ValueError("Format must contain a '=' "
+                                     "(e.g: WIDTH=20)")
                 key, value = line.split("=")
-                config.update({key: value})
-    except (FileNotFoundError, PermissionError) as e:
+                key = key.upper()
+                if key in keys:
+                    config.update({key: value})
+                else:
+                    raise ValueError("Unknown key: excepted: WIDTH, "
+                                     "HEIGHT, ENTRY, EXIT, OUTPUT_FILE,"
+                                     " PERFECT, WALL_COLOR, PATH_COLOR,"
+                                     " SPEC_COLOR or SEED")
+    except (FileNotFoundError, PermissionError, ValueError) as e:
         print(f"Error: {e}")
         sys.exit(1)
 
@@ -171,9 +182,6 @@ def parsing(file: str) -> MazeConfig:
 
         return MazeConfig(**config)
 
-    except ValidationError as e:
-        print(e.errors()[0]["msg"].split(",")[1].strip())
-        sys.exit(1)
     except Exception as e:
-        print(f"Parsing error:{e}")
+        print(f"Parsing error: {e}")
         sys.exit(1)

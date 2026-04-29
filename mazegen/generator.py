@@ -74,6 +74,7 @@ class Tiles(Enum):
     PATH_TOP = " ████ "
     PATH_BOT = " ▀▀▀▀ "
 
+
 class MazeGenerator:
     class Cell:
         """Represent a single cell of the maze grid.
@@ -228,7 +229,7 @@ class MazeGenerator:
         self.ENTRY: tuple[int, int] = entry
         self.EXIT: tuple[int, int] = exit_
         self.is_perfect: bool = is_perfect
-        self.wall_color= wall_color
+        self.wall_color = wall_color
         self.path_color = path_color
         self.spec_color = spec_color
         self.visible_path: bool = False
@@ -550,9 +551,6 @@ class MazeGenerator:
         seed(self.seed)
         while path:
             current = path[-1]
-            for y in range(self.height - 1):
-                for x in range(self.width - 1):
-                    cell = self.matrix[y][x]
             neighbors = [
                 case for case in self.get_neighbors_bis(current)
                 if case not in visited and not case.fixed
@@ -606,12 +604,12 @@ class MazeGenerator:
             otherwise ``False``.
         """
         if self.matrix[y - 1][x] in list_cell\
-              or self.matrix[y - 1][x - 1] in list_cell \
-              or self.matrix[y][x - 1] in list_cell \
-              or self.matrix[y + 1][x - 1] in list_cell \
-              or self.matrix[y + 1][x] in list_cell \
-              or self.matrix[y + 1][x + 1] in list_cell \
-              or self.matrix[y][x + 1]:
+           or self.matrix[y - 1][x - 1] in list_cell \
+           or self.matrix[y][x - 1] in list_cell \
+           or self.matrix[y + 1][x - 1] in list_cell \
+           or self.matrix[y + 1][x] in list_cell \
+           or self.matrix[y + 1][x + 1] in list_cell \
+           or self.matrix[y][x + 1]:
             return False
         return True
 
@@ -711,10 +709,12 @@ class MazeGenerator:
                               "east": True, "west": True}
                 cell.in_path = False
                 cell.spec = False
+
     def dfs_generation(self) -> None:
         self.dfs_generator()
         self.maze_solver()
         self.generate_txt()
+
     def kruskal_generation(self) -> None:
         self.dfs_generator()
         self.maze_solver()

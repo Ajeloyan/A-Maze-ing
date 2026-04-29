@@ -169,6 +169,10 @@ class Menu():
                   f"═════════╝{colors.RESET.value}")
 
             try:
+                error_msg = ""
+                if grid.width < 11 or grid.height < 10:
+                    error_msg = "MAZE TOO SMALL TO SHOW THE 42 PATTERN"
+                    print(error_msg)
                 user_choice: str = input("Please, enter a choice: ")
                 if user_choice == "1":
                     if grid.algo == "dfs":
