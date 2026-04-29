@@ -716,6 +716,6 @@ class MazeGenerator:
         self.generate_txt()
 
     def kruskal_generation(self) -> None:
-        self.dfs_generator()
+        self.kruskal_generator()
         self.maze_solver()
         self.generate_txt()
