@@ -12,8 +12,6 @@ optional commented lines beginning with ``#``.
 from pydantic import BaseModel, model_validator, Field, ValidationError
 from typing import Self, Optional
 import sys
-from enum import Enum
-from random import choice
 from mazegen.generator import Colors
 
 
