@@ -14,7 +14,7 @@ from typing import Self, Optional
 import sys
 from enum import Enum
 from random import choice
-from .generator import Colors
+from mazegen.generator import Colors
 
 
 class MazeConfig(BaseModel):

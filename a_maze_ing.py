@@ -1,5 +1,5 @@
 from mazegen.generator import MazeGenerator
-from mazegen.validator import parsing
+from validator import parsing
 import sys
 from menu import Menu
 

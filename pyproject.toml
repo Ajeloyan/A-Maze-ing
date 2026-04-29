@@ -3,7 +3,6 @@ name = "mazegen"
 version = "0.1.0"
 description = "Maze generator"
 authors = ["ajeloyan, ajeloyan@student.42lyon.fr & jbordeli, jbordeli@student.42lyon.fr"]
-readme = "README.MD"
 
 [tool.poetry.dependencies]
 python = "^3.10"
