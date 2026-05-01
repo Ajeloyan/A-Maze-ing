@@ -88,7 +88,7 @@ project/
 ## Example
 
 ```python
-from generator import MazeGenerator, Colors
+from mazegen.generator import MazeGenerator, Colors
 
 config = {
     "WIDTH": 20,
