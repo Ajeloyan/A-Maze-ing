@@ -127,7 +127,7 @@ class Menu():
                 space = ""
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"2.{colors.RESET.value} Show/hide path         "
-                  f"        {space}(actualy: {actual_path})"
+                  f"        {space}(current: {actual_path})"
                   f"{colors.CYAN.value}║")
             if grid.algo == "dfs":
                 space = "    "
@@ -135,7 +135,7 @@ class Menu():
                 space = ""
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"3.{colors.RESET.value} Change algo             "
-                  f"      {space}(actualy: {grid.algo})"
+                  f"      {space}(current: {grid.algo})"
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"4.{colors.RESET.value} Change color          "
@@ -149,7 +149,7 @@ class Menu():
                 space = ""
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"5.{colors.RESET.value} Show/Unshow animation   "
-                  f"       {space}(actualy: {actual_anim})"
+                  f"       {space}(current: {actual_anim})"
                   f"{colors.CYAN.value}║")
             if grid.is_perfect:
                 actual_perfect = "Perfect"
@@ -159,7 +159,7 @@ class Menu():
                 space = ""
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"6.{colors.RESET.value} Perfect/Imperfect           "
-                  f"{space}(actualy: {actual_perfect})"
+                  f"{space}(current: {actual_perfect})"
                   f"{colors.CYAN.value}║")
             print(f"    ║{colors.RESET.value}  {colors.BOLD.value}"
                   f"q.{colors.RESET.value} Quit                  "

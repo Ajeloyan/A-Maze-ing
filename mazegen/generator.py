@@ -122,10 +122,10 @@ class MazeGenerator:
 
             The wall order is:
 
-            * index 0: north
-            * index 1: east
-            * index 2: south
-            * index 3: west
+            * index bit 0: north
+            * index bit 1: east
+            * index bit 2: south
+            * index bit 3: west
             """
             if self.walls["north"] is True:
                 self.bin[3] = 1
