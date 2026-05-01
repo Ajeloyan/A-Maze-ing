@@ -269,7 +269,7 @@ Same seed = same maze.
 # Full Example
 
 ```python
-from generator import MazeGenerator, Colors
+from mazegen.generator import MazeGenerator, Colors
 
 config = {
     "WIDTH": 30,
